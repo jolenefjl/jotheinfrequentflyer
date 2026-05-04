@@ -1,45 +1,58 @@
 import Link from "next/link";
-import { Menu, Search } from "lucide-react";
+import { Bookmark, Search } from "lucide-react";
 
 const navItems = [
+  ["Home", "/"],
   ["Stays", "/stays"],
-  ["Flights", "/flights"],
   ["Food", "/food"],
   ["Experiences", "/experiences"],
-  ["Travel Tips", "/travel-tips"],
-  ["Top Lists", "/top-lists"],
-  ["About", "/about"],
+  ["Kids", "/kids"],
+  ["Top Tips", "/tips"],
 ];
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-30 bg-transparent">
-      <div className="container flex h-20 items-center justify-between gap-6">
-        <Link href="/" className="font-serif text-2xl text-[var(--warm-brown)]">
-          Jo the Infrequent Flyer
-        </Link>
-        <nav className="hidden items-center gap-5 text-sm font-semibold text-[var(--warm-brown)] lg:flex">
-          {navItems.map(([label, href]) => (
-            <Link key={href} href={href} className="transition hover:text-[var(--terracotta)]">
-              {label}
-            </Link>
-          ))}
-        </nav>
-        <div className="flex items-center gap-2">
-          <button
-            aria-label="Open search"
-            className="grid size-10 place-items-center text-[var(--warm-brown)]"
-          >
-            <Search size={18} />
-          </button>
-          <button
-            aria-label="Open navigation"
-            className="grid size-10 place-items-center text-[var(--warm-brown)] lg:hidden"
-          >
-            <Menu size={18} />
-          </button>
+    <header className="site-header">
+      <div className="container">
+        <div className="site-header__bar">
+          <div className="site-header__meta">
+            <span className="mono">No 047</span>
+            <span className="text-[var(--ink-4)]">·</span>
+            <span className="mono">Mon, May 4</span>
+          </div>
+          <Link href="/" className="brandmark" aria-label="Infrequent Flyer home">
+            <span className="brandmark__name">
+              Infrequent
+              <br />
+              Flyer
+            </span>
+          </Link>
+          <div className="site-header__actions">
+            <span className="mono text-[var(--ink-3)]">Vol. III</span>
+            <button className="iconbtn" aria-label="Search">
+              <Search size={16} strokeWidth={1.6} />
+            </button>
+            <button className="iconbtn" aria-label="Saved">
+              <Bookmark size={16} strokeWidth={1.6} />
+            </button>
+          </div>
         </div>
       </div>
+      <nav className="site-nav">
+        <div className="container">
+          <div className="site-nav__inner">
+            {navItems.map(([label, href]) => (
+              <Link key={href} href={href} className={`nav-item ${href === "/" ? "active" : ""}`}>
+                {label}
+              </Link>
+            ))}
+            <div className="nav-spacer" />
+            <Link href="/journal" className="nav-item">
+              Field Notes →
+            </Link>
+          </div>
+        </div>
+      </nav>
     </header>
   );
 }

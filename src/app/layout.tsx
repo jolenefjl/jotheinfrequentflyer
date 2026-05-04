@@ -1,17 +1,27 @@
 import type { Metadata } from "next";
-import { DM_Sans, Inter_Tight } from "next/font/google";
+import { Inter_Tight, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif",
   subsets: ["latin"],
+  style: ["normal", "italic"],
+  weight: ["400", "500"],
+  display: "swap",
 });
 
 const interTight = Inter_Tight({
   variable: "--font-inter-tight",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -39,7 +49,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${interTight.variable}`}>
+    <html
+      lang="en"
+      className={`${sourceSerif.variable} ${interTight.variable} ${jetBrainsMono.variable}`}
+    >
       <body>
         <SiteHeader />
         {children}
