@@ -6,6 +6,7 @@ import { schemaTypes } from "@/sanity/schemaTypes";
 export default defineConfig({
   name: "default",
   title: "Jo the Infrequent Flyer",
+  basePath: "/studio",
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "sfes8wpi",
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   plugins: [structureTool(), visionTool()],
