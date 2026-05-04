@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Outfit } from "next/font/google";
+import { DM_Sans, Unbounded } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -9,8 +9,8 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
 });
 
-const outfit = Outfit({
-  variable: "--font-outfit",
+const unbounded = Unbounded({
+  variable: "--font-unbounded",
   subsets: ["latin"],
   display: "swap",
 });
@@ -39,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${outfit.variable}`}>
+    <html lang="en" className={`${dmSans.variable} ${unbounded.variable}`}>
       <body>
         <SiteHeader />
         {children}
