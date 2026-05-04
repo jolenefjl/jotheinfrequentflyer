@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Fraunces } from "next/font/google";
+import { DM_Sans, Outfit } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -9,10 +9,9 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
 });
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
-  axes: ["SOFT", "WONK", "opsz"],
   display: "swap",
 });
 
@@ -40,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${fraunces.variable}`}>
+    <html lang="en" className={`${dmSans.variable} ${outfit.variable}`}>
       <body>
         <SiteHeader />
         {children}

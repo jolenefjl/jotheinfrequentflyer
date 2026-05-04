@@ -35,7 +35,7 @@ export default async function DestinationPage({
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#FAFAF8]/72">
             {destination.country}
           </p>
-          <h1 className="mt-3 font-serif text-7xl font-light">{destination.city}</h1>
+          <h1 className="mt-3 font-serif text-7xl font-medium">{destination.city}</h1>
           <p className="mt-5 max-w-2xl text-xl leading-8">{destination.joTake}</p>
         </div>
       </section>
@@ -43,14 +43,14 @@ export default async function DestinationPage({
         <div className="grid gap-10 lg:grid-cols-[0.75fr_1.25fr]">
           <aside>
             <p className="eyebrow">Destination score</p>
-            <p className="mt-3 font-serif text-5xl font-light italic text-[var(--terracotta)]">4.0</p>
+            <p className="mt-3 font-serif text-5xl font-medium text-[var(--terracotta)]">4.0</p>
             <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
               Mock average across published reviews. This will be calculated from Sanity content.
             </p>
           </aside>
           <div>
             <p className="eyebrow">Published here</p>
-            <h2 className="mt-3 font-serif text-5xl font-light text-[var(--warm-brown)]">Stays</h2>
+            <h2 className="mt-3 font-serif text-5xl font-medium text-[var(--warm-brown)]">Stays</h2>
             <div className="mt-6 grid gap-5">
               {relatedStays.length ? (
                 relatedStays.map((review) => (
@@ -62,7 +62,7 @@ export default async function DestinationPage({
                     <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
                       Stay review
                     </p>
-                    <h3 className="mt-2 font-serif text-3xl font-light text-[var(--warm-brown)]">
+                    <h3 className="mt-2 font-serif text-3xl font-medium text-[var(--warm-brown)]">
                       {review.title}
                     </h3>
                     <p className="mt-3 text-[var(--ink)]">{review.oneLineVerdict}</p>

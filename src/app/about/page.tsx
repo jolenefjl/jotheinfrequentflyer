@@ -8,7 +8,7 @@ export default function AboutPage() {
       </div>
       <article className="max-w-3xl">
         <p className="eyebrow">About Jo</p>
-        <h1 className="mt-4 font-serif text-6xl font-light leading-none text-[var(--warm-brown)]">
+        <h1 className="mt-4 font-serif text-6xl font-medium leading-none text-[var(--warm-brown)]">
           A Malaysian mum in Norway, making the annual leave count.
         </h1>
         <div className="mt-8 space-y-6 text-lg leading-9">

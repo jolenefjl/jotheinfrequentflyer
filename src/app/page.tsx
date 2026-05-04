@@ -25,7 +25,7 @@ export default async function Home() {
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#FAFAF8]/75">
             Honest travel · Real opinions
           </p>
-          <h1 className="mt-5 max-w-4xl font-serif text-6xl font-light italic leading-[0.95] md:text-7xl">
+          <h1 className="mt-5 max-w-4xl font-serif text-6xl font-medium leading-[0.95] md:text-7xl">
             Make every trip count.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-[#FAFAF8]/78 md:text-lg">
@@ -45,7 +45,7 @@ export default async function Home() {
         <div className="container grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p className="eyebrow">The map starts small</p>
-            <h2 className="mt-3 font-serif text-5xl font-light text-[var(--warm-brown)]">
+            <h2 className="mt-3 font-serif text-5xl font-medium text-[var(--warm-brown)]">
               Destinations Jo has actually been to.
             </h2>
             <p className="mt-5 leading-8 text-[var(--ink)]">
@@ -76,7 +76,7 @@ export default async function Home() {
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="eyebrow">Browse by place</p>
-            <h2 className="mt-3 font-serif text-5xl font-light text-[var(--warm-brown)]">
+            <h2 className="mt-3 font-serif text-5xl font-medium text-[var(--warm-brown)]">
               First destinations
             </h2>
           </div>
@@ -103,7 +103,7 @@ export default async function Home() {
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
                   {destination.country}
                 </p>
-                <h3 className="mt-1 font-serif text-3xl font-light text-[var(--warm-brown)]">
+                <h3 className="mt-1 font-serif text-3xl font-medium text-[var(--warm-brown)]">
                   {destination.city}
                 </h3>
                 <p className="mt-3 min-h-20 text-sm leading-6 text-[var(--ink)]">
@@ -133,7 +133,7 @@ export default async function Home() {
                     {item.type}
                   </p>
                   <div>
-                    <h3 className="font-serif text-3xl font-light text-[var(--warm-brown)]">
+                    <h3 className="font-serif text-3xl font-medium text-[var(--warm-brown)]">
                       {item.title}
                     </h3>
                     <p className="mt-1 text-sm text-[var(--muted)]">{item.destination}</p>
@@ -152,7 +152,7 @@ export default async function Home() {
                 className="object-cover"
               />
             </div>
-            <p className="mt-6 font-serif text-3xl font-light leading-tight text-[var(--warm-brown)]">
+            <p className="mt-6 font-serif text-3xl font-medium leading-tight text-[var(--warm-brown)]">
               &ldquo;I do not travel often enough to pretend every place is magical.&rdquo;
             </p>
             <p className="mt-4 leading-7 text-[var(--ink)]">
@@ -166,7 +166,7 @@ export default async function Home() {
       <section className="container py-20">
         <div className="bg-[#1E1C1A] p-8 text-[#FAFAF8] md:p-12">
           <p className="eyebrow text-[#FAFAF8]/65">Newsletter</p>
-          <h2 className="mt-3 max-w-3xl font-serif text-5xl font-light">
+          <h2 className="mt-3 max-w-3xl font-serif text-5xl font-medium">
             Worth-it travel notes, eventually in your inbox.
           </h2>
           <form className="mt-8 grid max-w-2xl gap-3 sm:grid-cols-[1fr_auto]">

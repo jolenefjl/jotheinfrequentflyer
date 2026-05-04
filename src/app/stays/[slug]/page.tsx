@@ -29,7 +29,7 @@ export default async function StayReviewPage({
         <div className="absolute inset-0 bg-gradient-to-t from-[#141210]/80 via-[#141210]/30 to-transparent" />
         <div className="container absolute inset-x-0 bottom-12 max-w-4xl text-[#FAFAF8]">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#FAFAF8]/72">Stay review</p>
-          <h1 className="mt-4 font-serif text-5xl font-light leading-none md:text-7xl">{review.title}</h1>
+          <h1 className="mt-4 font-serif text-5xl font-medium leading-none md:text-7xl">{review.title}</h1>
           <Link
             href={`/destinations/${review.destination.slug}`}
             className="mt-5 inline-block text-sm font-bold"
@@ -56,7 +56,7 @@ export default async function StayReviewPage({
           </div>
           <div className="mt-10 grid gap-5 md:grid-cols-2">
             <section>
-              <h2 className="font-serif text-3xl font-light text-[var(--warm-brown)]">The Good</h2>
+              <h2 className="font-serif text-3xl font-medium text-[var(--warm-brown)]">The Good</h2>
               <ul className="mt-4 space-y-3 text-sm leading-6">
                 {review.good.map((item) => (
                   <li key={item}>{item}</li>
@@ -64,7 +64,7 @@ export default async function StayReviewPage({
               </ul>
             </section>
             <section>
-              <h2 className="font-serif text-3xl font-light text-[var(--warm-brown)]">The Bad</h2>
+              <h2 className="font-serif text-3xl font-medium text-[var(--warm-brown)]">The Bad</h2>
               <ul className="mt-4 space-y-3 text-sm leading-6">
                 {review.bad.map((item) => (
                   <li key={item}>{item}</li>

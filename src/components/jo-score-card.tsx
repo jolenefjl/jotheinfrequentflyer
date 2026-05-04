@@ -19,7 +19,7 @@ export function JoScoreCard({
       <div className="flex flex-wrap items-end justify-between gap-4 pb-5">
         <div>
           <p className="eyebrow">The Jo Score</p>
-          <p className="mt-2 font-serif text-5xl font-light italic text-[var(--terracotta)]">
+          <p className="mt-2 font-serif text-5xl font-medium text-[var(--terracotta)]">
             {average}
           </p>
         </div>
@@ -28,7 +28,7 @@ export function JoScoreCard({
           <p>Would Jo return? {wouldJoReturn}</p>
         </div>
       </div>
-      <p className="my-5 font-serif text-2xl font-light leading-snug text-[var(--warm-brown)]">
+      <p className="my-5 font-serif text-2xl font-medium leading-snug text-[var(--warm-brown)]">
         {verdict}
       </p>
       <div className="grid gap-3">
@@ -36,7 +36,7 @@ export function JoScoreCard({
           <div key={score.label} className="grid gap-1 py-3">
             <div className="flex items-center justify-between gap-4">
               <p className="font-semibold text-[var(--ink)]">{score.label}</p>
-              <p className="font-serif text-2xl font-light italic text-[var(--terracotta)]">
+              <p className="font-serif text-2xl font-medium text-[var(--terracotta)]">
                 {score.value}/5
               </p>
             </div>
