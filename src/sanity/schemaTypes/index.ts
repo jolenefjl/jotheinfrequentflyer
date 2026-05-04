@@ -1,17 +1,28 @@
+import { blogPost } from "./blogPost";
 import { destination } from "./destination";
-import { experienceReview } from "./experienceReview";
-import { flightReview } from "./flightReview";
-import { foodReview } from "./foodReview";
+import { experience } from "./experienceReview";
+import { foodEntry } from "./foodReview";
+import { kidsContent } from "./kidsContent";
+import { newsletterSettings, siteSettings, socialSharingSettings } from "./settings";
 import { stayReview } from "./stayReview";
+import { imageLayout, imageWithMeta, pageMetadata, richText } from "./shared";
 import { topList } from "./topList";
-import { travelTip } from "./travelTip";
+import { topTip } from "./travelTip";
 
 export const schemaTypes = [
+  imageWithMeta,
+  imageLayout,
+  richText,
+  pageMetadata,
+  siteSettings,
+  socialSharingSettings,
+  newsletterSettings,
+  blogPost,
   destination,
   stayReview,
-  flightReview,
-  experienceReview,
-  foodReview,
-  travelTip,
+  experience,
+  foodEntry,
+  kidsContent,
+  topTip,
   topList,
 ];

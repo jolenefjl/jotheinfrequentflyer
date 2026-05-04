@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Bookmark, Star } from "lucide-react";
 import {
@@ -6,14 +7,49 @@ import {
   ReviewCard,
   SectionHead,
 } from "@/components/editorial-atoms";
+import { RichText } from "@/components/rich-text";
 import {
   editorialPhotos,
-  editorialReviews,
   reviewsForCategory,
 } from "@/lib/editorial-data";
+import { getEditorialEntries, getEditorialEntryBySlug } from "@/lib/sanity-content";
 
-export function generateStaticParams() {
-  return editorialReviews.map((review) => ({ slug: review.slug }));
+export async function generateStaticParams() {
+  const entries = await getEditorialEntries();
+  return entries.map((review) => ({ slug: review.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const review = await getEditorialEntryBySlug(slug);
+
+  if (!review) {
+    return {};
+  }
+
+  const title = review.metadata?.metaTitle || review.title;
+  const description = review.metadata?.metaDescription || review.metadata?.ogDescription || review.dek;
+  const image = review.metadata?.ogImage || review.metadata?.twitterCardImage || review.imageUrl || editorialPhotos[review.photo];
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description: review.metadata?.ogDescription || description,
+      images: image ? [{ url: image }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: review.metadata?.twitterCardDescription || description,
+      images: review.metadata?.twitterCardImage || image ? [review.metadata?.twitterCardImage || image] : undefined,
+    },
+  };
 }
 
 export default async function JournalPage({
@@ -22,7 +58,7 @@ export default async function JournalPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const review = editorialReviews.find((item) => item.slug === slug);
+  const review = await getEditorialEntryBySlug(slug);
 
   if (!review) {
     notFound();
@@ -106,7 +142,7 @@ export default async function JournalPage({
         <div className="container py-16 lg:py-24">
           <div className="relative aspect-[16/8] overflow-hidden">
             <EditorialPhoto
-              src={editorialPhotos[review.photo]}
+              src={review.imageUrl || editorialPhotos[review.photo]}
               alt={review.title}
               label={review.photoLabel}
               priority
@@ -132,43 +168,27 @@ export default async function JournalPage({
             </div>
           </aside>
 
-          <article className="prose max-w-none">
-            <h2 id="first-impression" className="serif m-0 mb-5 text-[38px] font-normal">
-              First impression
-            </h2>
-            <p>
-              This is placeholder copy for the redesign, but it is shaped around the kind of note
-              Jo will actually write: specific, opinionated, and honest about the small details that
-              make a rare trip feel worth the effort.
-            </p>
-            <p>
-              The useful question is not only whether a place is beautiful. It is whether the arrival
-              feels calm, whether breakfast is worth getting out of bed for, whether the room works
-              after a beach day, and whether the price still feels reasonable once the glow fades.
-            </p>
-
-            <h2 id="the-stay" className="serif mb-5 mt-14 text-[38px] font-normal">
-              The stay
-            </h2>
-            <p>
-              For the Perhentians, the fantasy is easy: clear water, slow mornings, and not much on
-              the agenda beyond swimming, reading, and choosing your next plate of something spicy.
-              The harder part is logistics, comfort, and whether the resort gets the everyday pieces
-              right enough that you can actually switch off.
-            </p>
-            <blockquote>
-              The best travel days are rarely packed. They are the ones where nothing dramatic
-              happens, and you still remember the light.
-            </blockquote>
-
-            <h2 id="worth-it" className="serif mb-5 mt-14 text-[38px] font-normal">
-              Worth it?
-            </h2>
-            <p>
-              If this were the only proper trip you were taking this year, the answer would come down
-              to how much you value ease. A good stay removes friction. A great one gives you back
-              enough attention to notice where you are.
-            </p>
+          <article className="max-w-none">
+            {review.body?.length ? (
+              <RichText value={review.body} />
+            ) : (
+              <>
+                <h2 id="first-impression" className="serif m-0 mb-5 text-[38px] font-normal">
+                  First impression
+                </h2>
+                <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">
+                  This is placeholder copy for the redesign, but it is shaped around the kind of note
+                  Jo will actually write: specific, opinionated, and honest about the small details
+                  that make a rare trip feel worth the effort.
+                </p>
+                <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">
+                  The useful question is not only whether a place is beautiful. It is whether the
+                  arrival feels calm, whether breakfast is worth getting out of bed for, whether the
+                  room works after a beach day, and whether the price still feels reasonable once the
+                  glow fades.
+                </p>
+              </>
+            )}
           </article>
 
           <aside>

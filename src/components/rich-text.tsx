@@ -1,0 +1,100 @@
+import Image from "next/image";
+import Link from "next/link";
+import { PortableText, type PortableTextBlock, type PortableTextComponents } from "next-sanity";
+
+type ImageLayoutValue = {
+  layout?: "single" | "two" | "three" | "four";
+  images?: {
+    _key?: string;
+    url?: string;
+    alt?: string;
+    caption?: string;
+    credit?: string;
+  }[];
+};
+
+const headingClass = "serif scroll-mt-32 font-normal tracking-[-0.02em] text-[var(--ink)]";
+
+const components: PortableTextComponents = {
+  block: {
+    h1: ({ children }) => <h1 className={`${headingClass} mt-16 text-[52px] leading-none`}>{children}</h1>,
+    h2: ({ children }) => <h2 className={`${headingClass} mt-14 text-[42px] leading-[1.05]`}>{children}</h2>,
+    h3: ({ children }) => <h3 className={`${headingClass} mt-12 text-[34px] leading-[1.1]`}>{children}</h3>,
+    h4: ({ children }) => <h4 className={`${headingClass} mt-10 text-[28px] leading-[1.15]`}>{children}</h4>,
+    h5: ({ children }) => <h5 className={`${headingClass} mt-9 text-[22px] leading-[1.2]`}>{children}</h5>,
+    h6: ({ children }) => <h6 className="mono mt-8 text-[var(--ink-3)]">{children}</h6>,
+    normal: ({ children }) => <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">{children}</p>,
+    blockquote: ({ children }) => (
+      <blockquote className="serif my-10 border-l border-[var(--ink)] pl-6 text-[30px] leading-[1.25] text-[var(--ink)]">
+        {children}
+      </blockquote>
+    ),
+  },
+  list: {
+    bullet: ({ children }) => <ul className="my-7 list-disc space-y-3 pl-6 text-lg leading-[1.7] text-[var(--ink-2)]">{children}</ul>,
+    number: ({ children }) => <ol className="my-7 list-decimal space-y-3 pl-6 text-lg leading-[1.7] text-[var(--ink-2)]">{children}</ol>,
+  },
+  marks: {
+    link: ({ value, children }) => {
+      const href = typeof value?.href === "string" ? value.href : "#";
+      const external = href.startsWith("http");
+      return external ? (
+        <a href={href} target={value?.blank === false ? undefined : "_blank"} rel="noreferrer" className="underline decoration-[var(--accent)] underline-offset-4">
+          {children}
+        </a>
+      ) : (
+        <Link href={href} className="underline decoration-[var(--accent)] underline-offset-4">
+          {children}
+        </Link>
+      );
+    },
+  },
+  types: {
+    imageLayout: ({ value }) => <ImageLayout value={value as ImageLayoutValue} />,
+  },
+};
+
+function ImageLayout({ value }: { value: ImageLayoutValue }) {
+  const images = value.images?.filter((image) => image.url) || [];
+
+  if (!images.length) {
+    return null;
+  }
+
+  const layout = value.layout || "single";
+  const gridClass =
+    layout === "single"
+      ? "grid-cols-1"
+      : layout === "two"
+        ? "grid-cols-2"
+        : layout === "three"
+          ? "grid-cols-1 md:grid-cols-3"
+          : "grid-cols-2";
+
+  return (
+    <div className={`my-12 grid gap-4 ${gridClass}`}>
+      {images.map((image, index) => (
+        <figure key={image._key || image.url || index} className="m-0">
+          <div className="relative aspect-[4/3] overflow-hidden bg-[var(--paper-2)]">
+            <Image src={image.url || ""} alt={image.alt || ""} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+          </div>
+          {(image.caption || image.credit) && (
+            <figcaption className="mono mt-2 text-[var(--ink-3)]">
+              {image.caption}
+              {image.caption && image.credit ? " / " : ""}
+              {image.credit}
+            </figcaption>
+          )}
+        </figure>
+      ))}
+    </div>
+  );
+}
+
+export function RichText({ value }: { value?: unknown[] }) {
+  if (!value?.length) {
+    return null;
+  }
+
+  return <PortableText value={value as PortableTextBlock[]} components={components} />;
+}

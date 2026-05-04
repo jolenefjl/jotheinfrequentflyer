@@ -1,17 +1,21 @@
 import { defineField, defineType } from "sanity";
-import { seoFields } from "./shared";
+import { bodyField, imageField, locationField, seoFields, slugField, titleField } from "./shared";
 
-export const travelTip = defineType({
-  name: "travelTip",
-  title: "Travel Tip",
+export const topTip = defineType({
+  name: "topTip",
+  title: "Top Tip",
   type: "document",
   fields: [
-    defineField({ name: "title", title: "Title", type: "string", validation: (Rule) => Rule.required() }),
-    defineField({ name: "slug", title: "Slug", type: "slug", options: { source: "title", maxLength: 96 }, validation: (Rule) => Rule.required() }),
-    defineField({ name: "destinations", title: "Related destinations", type: "array", of: [{ type: "reference", to: [{ type: "destination" }] }] }),
-    defineField({ name: "heroImage", title: "Hero image", type: "image", options: { hotspot: true } }),
-    defineField({ name: "pinterestImage", title: "Pinterest image", type: "image", options: { hotspot: true } }),
-    defineField({ name: "body", title: "Body", type: "array", of: [{ type: "block" }, { type: "image", options: { hotspot: true } }] }),
+    titleField,
+    slugField,
+    bodyField,
+    imageField,
+    locationField,
+    defineField({ name: "verdict", title: "Verdict", type: "string" }),
+    defineField({ name: "publishedDate", title: "Published date", type: "date" }),
     ...seoFields,
   ],
+  preview: {
+    select: { title: "title", subtitle: "location", media: "image" },
+  },
 });

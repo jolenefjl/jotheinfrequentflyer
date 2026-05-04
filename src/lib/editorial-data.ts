@@ -34,6 +34,7 @@ export type EditorialReview = {
   readTime: string;
   location: string;
   photo: keyof typeof editorialPhotos;
+  imageUrl?: string;
   photoLabel: string;
   rating: number | null;
   featured?: boolean;

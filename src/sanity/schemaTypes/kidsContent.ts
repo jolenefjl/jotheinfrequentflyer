@@ -1,23 +1,22 @@
 import { defineField, defineType } from "sanity";
-import { bodyField, imageField, locationField, seoFields, slugField, titleField } from "./shared";
+import { bodyField, imageField, seoFields, slugField, titleField } from "./shared";
 
-export const foodEntry = defineType({
-  name: "foodEntry",
-  title: "Food Entry",
+export const kidsContent = defineType({
+  name: "kidsContent",
+  title: "Kids Content",
   type: "document",
   fields: [
     titleField,
     slugField,
     bodyField,
     imageField,
-    locationField,
-    defineField({ name: "dish", title: "Dish", type: "string" }),
     defineField({ name: "verdict", title: "Verdict", type: "string" }),
     defineField({ name: "bestFor", title: "Best for", type: "array", of: [{ type: "string" }] }),
+    defineField({ name: "avoid", title: "Avoid", type: "string" }),
     defineField({ name: "publishedDate", title: "Published date", type: "date" }),
     ...seoFields,
   ],
   preview: {
-    select: { title: "title", subtitle: "location", media: "image" },
+    select: { title: "title", subtitle: "verdict", media: "image" },
   },
 });

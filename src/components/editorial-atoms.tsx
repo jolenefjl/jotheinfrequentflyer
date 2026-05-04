@@ -4,10 +4,10 @@ import { ArrowDown, ArrowRight, Plus, Star } from "lucide-react";
 import {
   editorialCategoryMeta,
   editorialPhotos,
-  reviewsForCategory,
   type EditorialCategory,
   type EditorialReview,
 } from "@/lib/editorial-data";
+import { getEditorialEntriesByCategory } from "@/lib/sanity-content";
 
 export function EditorialPhoto({
   src,
@@ -76,7 +76,7 @@ export function ReviewCard({ review }: { review: EditorialReview }) {
       <Link href={`/journal/${review.slug}`} className="contents">
         <div className="relative aspect-[4/5] overflow-hidden">
           <EditorialPhoto
-            src={editorialPhotos[review.photo]}
+            src={review.imageUrl || editorialPhotos[review.photo]}
             alt={review.title}
             sizes="(max-width: 1024px) 100vw, 33vw"
           />
@@ -117,9 +117,9 @@ export function ComingNextIssue() {
   );
 }
 
-export function CategoryLanding({ category }: { category: EditorialCategory }) {
+export async function CategoryLanding({ category }: { category: EditorialCategory }) {
   const meta = editorialCategoryMeta[category];
-  const all = reviewsForCategory(category);
+  const all = await getEditorialEntriesByCategory(category);
   const featured = all[0];
   const rest = all.slice(1);
 
@@ -172,7 +172,7 @@ export function CategoryLanding({ category }: { category: EditorialCategory }) {
             >
               <div className="relative aspect-[16/10] overflow-hidden">
                 <EditorialPhoto
-                  src={editorialPhotos[featured.photo]}
+                  src={featured.imageUrl || editorialPhotos[featured.photo]}
                   alt={featured.title}
                   label={featured.photoLabel}
                 />

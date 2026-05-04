@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
+import { getEditorialEntries, getNewsletterSettings } from "@/lib/sanity-content";
 
 type Review = {
   id: string;
@@ -13,6 +14,7 @@ type Review = {
   readTime: string;
   location: string;
   photo: keyof typeof photos;
+  imageUrl?: string;
   photoLabel: string;
   rating: number | null;
   featured?: boolean;
@@ -198,9 +200,14 @@ const pins = [
   { x: 380, y: 215, label: "Ibiza" },
 ];
 
-export default function Home() {
-  const featured = reviews.find((review) => review.featured) || reviews[0];
-  const latest = reviews.filter((review) => !review.featured).slice(0, 6);
+export default async function Home() {
+  const [sanityReviews, newsletter] = await Promise.all([
+    getEditorialEntries({ fallback: false }),
+    getNewsletterSettings(),
+  ]);
+  const activeReviews = (sanityReviews.length ? sanityReviews : reviews) as Review[];
+  const featured = activeReviews.find((review) => review.featured) || activeReviews[0];
+  const latest = activeReviews.filter((review) => !review.featured).slice(0, 6);
 
   return (
     <main className="page">
@@ -237,7 +244,7 @@ export default function Home() {
               <span className="mono text-[rgba(245,242,236,0.7)]">Currently</span>
               <span className="serif text-[22px] italic tracking-[-0.005em]">Lisbon →</span>
               <span className="mono mt-1.5 text-[rgba(245,242,236,0.55)]">
-                {reviews.length} entries · {destinations.length} places
+                {activeReviews.length} entries · {destinations.length} places
               </span>
             </div>
           </div>
@@ -258,7 +265,7 @@ export default function Home() {
           <div className="hero-grid grid grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] items-stretch gap-14">
             <div className="relative aspect-[4/5] overflow-hidden">
               <Photo
-                src={photos[featured.photo]}
+                src={featured.imageUrl || photos[featured.photo]}
                 alt={featured.title}
                 label={featured.photoLabel}
                 fillContainer
@@ -421,19 +428,18 @@ export default function Home() {
           <div className="mx-auto max-w-[880px] text-center">
             <div className="mono mb-6 text-[var(--ink-3)]">— Newsletter</div>
             <h3 className="serif m-0 mb-7 text-[clamp(28px,3.4vw,44px)] font-normal italic leading-[1.15] tracking-[-0.01em]">
-              A few times a year, when I have something worth saying.
+              {newsletter.newsletterTitle}
             </h3>
             <p className="mx-auto mb-7 max-w-[620px] text-base leading-[1.65] text-[var(--ink-2)]">
-              Newsletter — no schedule, no tracking, no fluff. Just a note when there is a place,
-              meal, or useful mistake worth passing on.
+              {newsletter.description}
             </p>
             <form className="mx-auto flex max-w-[520px] justify-center">
               <input
                 type="email"
-                placeholder="your@email.com"
+                placeholder={newsletter.emailPlaceholderText}
                 className="min-w-0 flex-1 border border-r-0 border-[var(--ink)] bg-transparent px-4 py-3 font-mono text-[11px] uppercase tracking-[0.08em] outline-none"
               />
-              <button className="btn">Subscribe</button>
+              <button className="btn">{newsletter.subscribeButtonText}</button>
             </form>
           </div>
         </div>
@@ -522,7 +528,7 @@ function ReviewCard({ review }: { review: Review }) {
       <Link href={`/journal/${review.slug}`} className="contents">
         <div className="relative aspect-[4/5] overflow-hidden">
           <Photo
-            src={photos[review.photo]}
+            src={review.imageUrl || photos[review.photo]}
             alt={review.title}
             fillContainer
             sizes="(max-width: 1024px) 100vw, 33vw"

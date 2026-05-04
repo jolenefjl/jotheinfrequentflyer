@@ -11,12 +11,12 @@ import type { Destination, LatestItem, StayReview } from "./types";
 
 const destinationFields = `
   _id,
-  city,
+  "city": coalesce(city, name),
   country,
   "slug": slug.current,
   joTake,
-  latitude,
-  longitude,
+  "latitude": coalesce(latitude, coordinates.lat),
+  "longitude": coalesce(longitude, coordinates.lng),
   "heroImage": heroImage.asset->url,
   _updatedAt
 `;

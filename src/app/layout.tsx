@@ -3,6 +3,7 @@ import { Inter_Tight, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { getSiteSettings } from "@/lib/sanity-content";
 
 const sourceSerif = Source_Serif_4({
   variable: "--font-source-serif",
@@ -25,23 +26,37 @@ const jetBrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://jotheinfrequentflyer.com"),
-  title: {
-    default: "Jo the Infrequent Flyer",
-    template: "%s | Jo the Infrequent Flyer",
-  },
-  description:
-    "Honest, first-hand travel reviews for people who do not travel often enough to waste a trip.",
-  openGraph: {
-    title: "Jo the Infrequent Flyer",
-    description:
-      "Warm, honest travel reviews from a Malaysian-born mum in Norway who makes every trip count.",
-    url: "https://jotheinfrequentflyer.com",
-    siteName: "Jo the Infrequent Flyer",
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  const title = settings.siteTitle || "Jo the Infrequent Flyer";
+  const description =
+    settings.defaultMetaDescription ||
+    settings.siteDescription ||
+    "Honest, first-hand travel reviews for people who do not travel often enough to waste a trip.";
+
+  return {
+    metadataBase: new URL("https://jotheinfrequentflyer.com"),
+    title: {
+      default: title,
+      template: `%s | ${title}`,
+    },
+    description,
+    icons: settings.favicon ? [{ rel: "icon", url: settings.favicon }] : undefined,
+    openGraph: {
+      title,
+      description,
+      url: "https://jotheinfrequentflyer.com",
+      siteName: title,
+      type: "website",
+      images: settings.defaultOgImage ? [{ url: settings.defaultOgImage }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: settings.twitterHandle,
+      images: settings.defaultOgImage ? [settings.defaultOgImage] : undefined,
+    },
+  };
+}
 
 export default function RootLayout({
   children,
