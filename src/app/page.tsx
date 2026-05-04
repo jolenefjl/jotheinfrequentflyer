@@ -318,7 +318,7 @@ export default async function Home() {
                   <span className="mono text-[var(--ink-3)]">0{index + 1}</span>
                   <span className="mono text-[var(--ink-3)]">{category.count} entries</span>
                 </div>
-                <h3 className="serif m-0 mt-auto text-[34px] font-normal leading-none tracking-[-0.01em]">
+                <h3 className="serif m-0 mt-8 text-[34px] font-normal leading-none tracking-[-0.01em]">
                   {category.label}
                 </h3>
                 <p className="m-0 text-[13px] leading-normal text-[var(--ink-2)]">{category.blurb}</p>
