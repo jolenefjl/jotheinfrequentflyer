@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Unbounded } from "next/font/google";
+import { DM_Sans, Inter_Tight } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -9,8 +9,8 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
 });
 
-const unbounded = Unbounded({
-  variable: "--font-unbounded",
+const interTight = Inter_Tight({
+  variable: "--font-inter-tight",
   subsets: ["latin"],
   display: "swap",
 });
@@ -39,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${unbounded.variable}`}>
+    <html lang="en" className={`${dmSans.variable} ${interTight.variable}`}>
       <body>
         <SiteHeader />
         {children}
