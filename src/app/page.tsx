@@ -250,8 +250,8 @@ export default function Home() {
       </section>
 
       <section className="border-b border-[var(--rule)]">
-        <div className="container py-14">
-          <div className="mb-7 flex items-baseline justify-between">
+        <div className="container py-24 lg:py-32">
+          <div className="mb-10 flex items-baseline justify-between">
             <span className="mono text-[var(--ink-3)]">— The cover story</span>
             <span className="mono text-[var(--ink-4)]">Issue 047 / May 2026</span>
           </div>
@@ -302,7 +302,7 @@ export default function Home() {
       </section>
 
       <section className="border-b border-[var(--rule)]">
-        <div className="container py-16">
+        <div className="container py-24 lg:py-32">
           <SectionHead kicker="Browse" title="Five ways in." />
           <div className="cat-grid">
             {categories.map((category, index) => (
@@ -326,7 +326,7 @@ export default function Home() {
       </section>
 
       <section className="border-b border-[var(--rule)]">
-        <div className="container py-16">
+        <div className="container py-24 lg:py-32">
           <SectionHead kicker="The latest" title="Recently filed." action="See all" href="/stays" />
           <div className="grid gap-10 lg:grid-cols-3">
             {latest.slice(0, 3).map((review) => (
@@ -337,7 +337,7 @@ export default function Home() {
       </section>
 
       <section className="border-b border-[var(--rule)]">
-        <div className="container py-16 pb-20">
+        <div className="container py-24 lg:py-32">
           <SectionHead kicker="Field map" title="By place." />
           <div className="grid gap-14 lg:grid-cols-[1.3fr_1fr]">
             <div
@@ -417,7 +417,7 @@ export default function Home() {
       </section>
 
       <section className="border-b border-[var(--rule)] bg-[var(--paper-2)]">
-        <div className="container py-20">
+        <div className="container py-28 lg:py-36">
           <div className="mx-auto max-w-[880px] text-center">
             <div className="mono mb-6 text-[var(--ink-3)]">— Newsletter</div>
             <h3 className="serif m-0 mb-7 text-[clamp(28px,3.4vw,44px)] font-normal italic leading-[1.15] tracking-[-0.01em]">
@@ -499,7 +499,7 @@ function SectionHead({
   href?: string;
 }) {
   return (
-    <div className="mb-7 flex items-end justify-between gap-6">
+    <div className="mb-12 flex items-end justify-between gap-6">
       <div>
         <div className="mono mb-2.5 text-[var(--ink-3)]">— {kicker}</div>
         <h2 className="serif m-0 text-[clamp(28px,3vw,40px)] font-normal leading-[1.1] tracking-[-0.01em]">
