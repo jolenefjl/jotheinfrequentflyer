@@ -399,8 +399,13 @@ img {
 }
 
 .cover-story-grid {
-  grid-template-columns: minmax(0, 0.9fr) minmax(420px, 0.8fr);
-  gap: clamp(96px, 10vw, 160px);
+  grid-template-columns: minmax(0, 0.86fr) minmax(420px, 0.82fr);
+  gap: clamp(72px, 8vw, 128px);
+}
+
+.cover-story-grid > :nth-child(2) {
+  min-width: 0;
+  padding-left: clamp(40px, 5vw, 88px);
 }
 
 .stay-review-hero {
@@ -449,6 +454,10 @@ img {
   .hero-grid {
     grid-template-columns: 1fr !important;
     gap: 48px !important;
+  }
+
+  .cover-story-grid > :nth-child(2) {
+    padding-left: 0;
   }
 
   .cat-grid {
