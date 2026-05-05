@@ -9,6 +9,7 @@ export const publishHomePageAction: DocumentActionComponent = (props) => {
     label: hasDraftChanges ? "Publish home page" : "Home page published",
     tone: "positive",
     disabled: Boolean(isDisabled),
+    title: isDisabled && typeof isDisabled === "string" ? isDisabled : undefined,
     onHandle: () => {
       publish.execute();
       props.onComplete();
@@ -17,4 +18,3 @@ export const publishHomePageAction: DocumentActionComponent = (props) => {
 };
 
 publishHomePageAction.displayName = "PublishHomePageAction";
-publishHomePageAction.action = "publish";
