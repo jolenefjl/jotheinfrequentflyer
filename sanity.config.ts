@@ -16,7 +16,10 @@ export default defineConfig({
   },
   document: {
     actions: (previousActions, context) => {
-      if (context.schemaType === "homePage") {
+      const schemaType = context.schemaType as string | { name?: string };
+      const schemaTypeName = typeof schemaType === "string" ? schemaType : schemaType.name;
+
+      if (schemaTypeName === "homePage") {
         const withoutDefaultPublish = previousActions.filter((action) => action.action !== "publish");
         return [publishHomePageAction, ...withoutDefaultPublish];
       }
