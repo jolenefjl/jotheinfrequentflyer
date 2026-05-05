@@ -399,13 +399,12 @@ img {
 }
 
 .cover-story-grid {
-  grid-template-columns: minmax(0, 0.86fr) minmax(420px, 0.82fr);
-  gap: clamp(72px, 8vw, 128px);
+  grid-template-columns: minmax(0, 58%) minmax(0, 34%);
+  column-gap: 8%;
 }
 
 .cover-story-grid > :nth-child(2) {
   min-width: 0;
-  padding-left: clamp(40px, 5vw, 88px);
 }
 
 .stay-review-hero {
@@ -457,7 +456,7 @@ img {
   }
 
   .cover-story-grid > :nth-child(2) {
-    padding-left: 0;
+    min-width: 0;
   }
 
   .cat-grid {
