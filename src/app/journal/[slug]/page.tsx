@@ -290,7 +290,7 @@ function StayReviewJournalPage({
               {country ? ` - ${country}` : ""}
               {monthYear ? ` - ${monthYear}` : ""}
             </div>
-            <h1 className="serif mx-auto m-0 max-w-[980px] text-[48px] font-normal leading-[1.04] tracking-[-0.02em]">
+            <h1 className="serif mx-auto m-0 max-w-[980px] text-[48px] font-light leading-[1.04] tracking-[-0.01em]">
               {review.title}
             </h1>
             <p className="serif mx-auto mt-7 max-w-[720px] text-[22px] italic leading-[1.4] text-[var(--ink-2)]">
@@ -327,7 +327,7 @@ function StayReviewJournalPage({
             <StayReviewBottom review={review} average={average} />
           </article>
 
-          <aside className="order-3 lg:border-l lg:border-[var(--rule)] lg:pl-8">
+          <aside className="order-3 hidden lg:block lg:border-l lg:border-[var(--rule)] lg:pl-8">
             <div className="sticky top-36">
               <div className="mono mb-4 text-[var(--ink-3)]">On this page</div>
               {onThisPage.map((item, index) => (

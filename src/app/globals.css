@@ -381,12 +381,12 @@ img {
 .manifesto-hero__title {
   color: var(--paper);
   font-family: var(--f-serif);
-  font-size: clamp(56px, 9vw, 144px);
+  font-size: clamp(39px, 6.3vw, 101px);
   font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.035em;
-  line-height: 0.92;
-  margin: 0 0 28px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 0.98;
+  margin: 0 0 22px;
   text-shadow: 0 1px 60px rgba(0, 0, 0, 0.25);
   text-wrap: balance;
 }
@@ -481,11 +481,44 @@ img {
 
   .site-header__bar {
     grid-template-columns: 1fr auto;
+    height: 62px;
   }
 
-  .site-header__meta,
-  .site-nav {
+  .site-header__meta {
     display: none;
+  }
+
+  .site-header__actions .mono {
+    display: none;
+  }
+
+  .brandmark__name {
+    font-size: 22px;
+  }
+
+  .site-nav {
+    display: block;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .site-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .site-nav__inner {
+    width: max-content;
+    min-width: 100%;
+    height: 40px;
+  }
+
+  .nav-item {
+    padding: 0 16px;
+    white-space: nowrap;
+  }
+
+  .nav-spacer {
+    min-width: 20px;
   }
 
   .manifesto-hero__inner {
