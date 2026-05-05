@@ -5,7 +5,7 @@ export const sanityConfig = {
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "sfes8wpi",
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
   apiVersion: "2026-05-04",
-  useCdn: true,
+  useCdn: false,
 };
 
 export const client = createClient(sanityConfig);
@@ -18,7 +18,9 @@ export function urlFor(source: Parameters<typeof builder.image>[0]) {
 
 export async function sanityQuery<T>(query: string, params = {}) {
   try {
-    return await client.fetch<T>(query, params);
+    return await client.fetch<T>(query, params, {
+      next: { revalidate: 60 },
+    });
   } catch {
     return null;
   }

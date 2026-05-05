@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
 import { getEditorialEntries, getNewsletterSettings } from "@/lib/sanity-content";
 
+export const revalidate = 60;
+
 type Review = {
   id: string;
   slug: string;

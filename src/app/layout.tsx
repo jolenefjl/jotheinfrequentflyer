@@ -26,6 +26,8 @@ const jetBrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+export const revalidate = 60;
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   const title = settings.siteTitle || "Jo the Infrequent Flyer";

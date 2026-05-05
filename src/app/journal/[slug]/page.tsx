@@ -14,6 +14,9 @@ import {
 } from "@/lib/editorial-data";
 import { getEditorialEntries, getEditorialEntryBySlug } from "@/lib/sanity-content";
 
+export const revalidate = 60;
+export const dynamicParams = true;
+
 export async function generateStaticParams() {
   const entries = await getEditorialEntries();
   return entries.map((review) => ({ slug: review.slug }));
