@@ -203,6 +203,75 @@ async function main() {
     emailPlaceholderText: "your@email.com",
   });
 
+  await client.createOrReplace({
+    _id: "homePage",
+    _type: "homePage",
+    title: "Home Page",
+    hero: {
+      image: image(assets.ocean, "Tropical sea in the Perhentian Islands", "Perhentian Besar, Malaysia"),
+      eyebrowLeft: "Est. 2024",
+      eyebrowRight: "A travel review, slowly kept",
+      headline: "The Infrequent Flyer.",
+      intro:
+        "Because I don't get to travel often enough, every single trip is precious. These are my notes on the places I've slept, the meals I've remembered, and the days that turned out to matter.",
+      currentLabel: "Currently",
+      currentValue: "Lisbon ->",
+      photoCredit: "Cover photo / Perhentian Besar, Malaysia",
+    },
+    coverStory: {
+      kicker: "The cover story",
+      issueLabel: "Issue 047 / May 2026",
+      entry: { _type: "reference", _ref: "seed-stayReview-marriott-pulau-perhentian" },
+      badge: "Cover",
+      secondaryBadge: "Stay · Malaysia",
+      ratingLine: "4.2 / 5 - 12 min read",
+      dateLine: "March 2026 · Perhentian Besar, Malaysia",
+      buttonText: "Read the review",
+      stats: [
+        { label: "Nights stayed", value: "7" },
+        { label: "Verdict", value: "Send a friend" },
+        { label: "Best for", value: "Slow couples" },
+        { label: "Avoid in", value: "Nov - Feb" },
+      ],
+    },
+    browseSection: {
+      kicker: "Browse",
+      title: "Five ways in.",
+      tiles: [
+        { label: "Stays", href: "/stays", count: "47 entries", blurb: "Hotels, inns, rentals - anywhere I've slept and have an opinion about.", visible: true },
+        { label: "Food", href: "/food", count: "84 entries", blurb: "Counter seats, neighborhood spots, the one dish worth the detour.", visible: true },
+        { label: "Experiences", href: "/experiences", count: "38 entries", blurb: "Walks, treks, classes, museums - the kind of days you remember.", visible: true },
+        { label: "Kids", href: "/kids", count: "14 entries", blurb: "Travel with small humans: what worked, what didn't, what I'd skip.", visible: true },
+        { label: "City Guides", href: "/city-guides", count: "Coming soon", blurb: "First-person city files for eating, staying, wandering, and skipping wisely.", visible: true },
+      ],
+    },
+    latestSection: {
+      kicker: "The latest",
+      title: "Recently filed.",
+      actionText: "See all",
+      actionHref: "/stays",
+      entries: [
+        { _type: "reference", _ref: "seed-kidsContent-puglia-with-toddler" },
+        { _type: "reference", _ref: "seed-foodEntry-kafe-koba" },
+        { _type: "reference", _ref: "seed-experience-naoshima-walk" },
+      ],
+    },
+    placeSection: {
+      kicker: "Field map",
+      title: "By place.",
+      mapLabelLeft: "○ 38 places",
+      mapLabelRight: "○ 14 countries",
+      mapNote: "drawn from memory, mostly accurate",
+      places: destinations.map((destination) => ({
+        _type: "reference",
+        _ref: `destination-${destination.id}`,
+      })),
+    },
+    newsletterSection: {
+      kicker: "Newsletter",
+    },
+  });
+
   for (const destination of destinations) {
     await client.createOrReplace({
       _id: `destination-${destination.id}`,

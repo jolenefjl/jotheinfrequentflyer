@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Bookmark, Search } from "lucide-react";
+import { hasVisibleCityGuides } from "@/lib/sanity-content";
 
 const navItems = [
   ["Home", "/"],
@@ -7,10 +8,12 @@ const navItems = [
   ["Food", "/food"],
   ["Experiences", "/experiences"],
   ["Kids", "/kids"],
-  ["Top Tips", "/tips"],
 ];
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const showCityGuides = await hasVisibleCityGuides();
+  const items = showCityGuides ? [...navItems, ["City Guides", "/city-guides"]] : navItems;
+
   return (
     <header className="site-header">
       <div className="container">
@@ -41,15 +44,12 @@ export function SiteHeader() {
       <nav className="site-nav">
         <div className="container">
           <div className="site-nav__inner">
-            {navItems.map(([label, href]) => (
+            {items.map(([label, href]) => (
               <Link key={href} href={href} className={`nav-item ${href === "/" ? "active" : ""}`}>
                 {label}
               </Link>
             ))}
             <div className="nav-spacer" />
-            <Link href="/journal" className="nav-item">
-              Field Notes →
-            </Link>
           </div>
         </div>
       </nav>

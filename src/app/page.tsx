@@ -1,7 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
-import { getEditorialEntries, getNewsletterSettings, getPlaces } from "@/lib/sanity-content";
+import {
+  getEditorialEntries,
+  getHomePageContent,
+  getNewsletterSettings,
+  getPlaces,
+  type HomeTile,
+} from "@/lib/sanity-content";
 
 export const revalidate = 60;
 
@@ -173,10 +179,10 @@ const categories = [
     blurb: "Travel with small humans: what worked, what didn't, what I'd skip.",
   },
   {
-    id: "tips",
-    label: "Top Tips",
+    id: "city-guides",
+    label: "City Guides",
     count: 22,
-    blurb: "Hard-won, opinionated, occasionally contrarian advice by city.",
+    blurb: "First-person city files for eating, staying, wandering, and skipping wisely.",
   },
 ];
 
@@ -202,22 +208,48 @@ function projectPin(place: { lat?: number; lng?: number; name: string }) {
 }
 
 export default async function Home() {
-  const [sanityReviews, newsletter, sanityDestinations] = await Promise.all([
+  const [sanityReviews, newsletter, sanityDestinations, homePage] = await Promise.all([
     getEditorialEntries({ fallback: false }),
     getNewsletterSettings(),
     getPlaces({ fallback: false }),
+    getHomePageContent(),
   ]);
   const activeReviews = (sanityReviews.length ? sanityReviews : reviews) as Review[];
   const activeDestinations = sanityDestinations.length ? sanityDestinations : fallbackDestinations;
-  const pins = activeDestinations.map(projectPin);
-  const featured = activeReviews.find((review) => review.featured) || activeReviews[0];
-  const latest = activeReviews.filter((review) => !review.featured).slice(0, 6);
+  const editablePlaces = homePage?.placeSection?.places?.length
+    ? homePage.placeSection.places
+    : activeDestinations;
+  const pins = editablePlaces.map(projectPin);
+  const featured =
+    (homePage?.coverStory?.entry as Review | undefined) ||
+    activeReviews.find((review) => review.featured) ||
+    activeReviews[0];
+  const latest = ((homePage?.latestSection?.entries?.length
+    ? homePage.latestSection.entries
+    : activeReviews.filter((review) => review.slug !== featured.slug)) as Review[]).slice(0, 6);
+  const browseTiles =
+    homePage?.browseSection?.tiles?.filter((tile) => tile.visible !== false) ||
+    categories.map((category) => ({
+      label: category.label,
+      href: `/${category.id}`,
+      count: `${category.count} entries`,
+      blurb: category.blurb,
+      visible: true,
+    } satisfies HomeTile));
+  const coverStats = homePage?.coverStory?.stats?.length
+    ? homePage.coverStory.stats
+    : [
+        { label: "Nights stayed", value: "7" },
+        { label: "Verdict", value: "Send a friend" },
+        { label: "Best for", value: "Slow couples" },
+        { label: "Avoid in", value: "Nov - Feb" },
+      ];
 
   return (
     <main className="page">
       <section className="manifesto-hero">
         <Photo
-          src={photos.ocean}
+          src={homePage?.hero?.imageUrl || photos.ocean}
           alt="Tropical sea in Perhentian Besar"
           className="absolute inset-0 -z-20"
           priority
@@ -231,21 +263,26 @@ export default async function Home() {
         />
         <div className="container manifesto-hero__inner">
           <div className="mb-9 grid grid-cols-[auto_1fr_auto] items-baseline gap-6">
-            <span className="mono text-[rgba(245,242,236,0.7)]">Est. 2024</span>
+            <span className="mono text-[rgba(245,242,236,0.7)]">
+              {homePage?.hero?.eyebrowLeft || "Est. 2024"}
+            </span>
             <div className="h-px bg-[rgba(245,242,236,0.3)]" />
             <span className="mono text-[rgba(245,242,236,0.7)]">
-              A travel review, slowly kept
+              {homePage?.hero?.eyebrowRight || "A travel review, slowly kept"}
             </span>
           </div>
-          <h1 className="manifesto-hero__title">The Infrequent Flyer.</h1>
+          <h1 className="manifesto-hero__title">
+            {homePage?.hero?.headline || "The Infrequent Flyer."}
+          </h1>
           <div className="manifesto-grid">
             <p className="serif m-0 max-w-[760px] text-[clamp(22px,2.6vw,32px)] font-normal leading-[1.35] text-[var(--paper)]">
-              Because I don&apos;t get to travel often enough, every single trip is precious.
-              These are my notes on the places I&apos;ve slept, the meals I&apos;ve remembered, and
-              the days that turned out to matter.
+              {homePage?.hero?.intro ||
+                "Because I don't get to travel often enough, every single trip is precious. These are my notes on the places I've slept, the meals I've remembered, and the days that turned out to matter."}
             </p>
             <div className="flex flex-col items-start gap-1.5 text-[var(--paper)]">
-              <span className="mono text-[rgba(245,242,236,0.7)]">Currently</span>
+              <span className="mono text-[rgba(245,242,236,0.7)]">
+                {homePage?.hero?.currentLabel || "Currently"}
+              </span>
               <span className="serif text-[22px] italic tracking-[-0.005em]">Lisbon →</span>
               <span className="mono mt-1.5 text-[rgba(245,242,236,0.55)]">
                 {activeReviews.length} entries · {activeDestinations.length} places
@@ -264,7 +301,9 @@ export default async function Home() {
         <div className="container py-24 lg:py-32">
           <div className="mb-10 flex items-baseline justify-between">
             <span className="mono text-[var(--ink-3)]">— The cover story</span>
-            <span className="mono text-[var(--ink-4)]">Issue 047 / May 2026</span>
+            <span className="mono text-[var(--ink-4)]">
+              {homePage?.coverStory?.issueLabel || "Issue 047 / May 2026"}
+            </span>
           </div>
           <div className="hero-grid grid grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] items-stretch gap-14">
             <div className="relative aspect-[4/5] overflow-hidden">
@@ -276,7 +315,7 @@ export default async function Home() {
                 sizes="(max-width: 1080px) 100vw, 56vw"
               />
               <div className="absolute left-[18px] top-[18px] flex gap-1.5">
-                <span className="tag solid">Cover</span>
+                <span className="tag solid">{homePage?.coverStory?.badge || "Cover"}</span>
                 <span className="tag border-transparent bg-[rgba(245,242,236,0.92)]">
                   Stay · Malaysia
                 </span>
@@ -288,7 +327,7 @@ export default async function Home() {
                   ★ ★ ★ ★ ☆ &nbsp; — &nbsp; 4.2 / 5 &nbsp; — &nbsp; 12 min read
                 </div>
                 <h2 className="serif m-0 mb-[22px] text-[clamp(40px,5vw,68px)] font-normal leading-none tracking-[-0.02em]">
-                  A week of slow mornings at the Marriott Perhentian Island.
+                  {featured.title}
                 </h2>
                 <p className="m-0 mb-7 max-w-[520px] text-lg leading-[1.55] text-[var(--ink-2)]">
                   {featured.dek}
@@ -296,15 +335,15 @@ export default async function Home() {
                 <div className="mono mb-7 tracking-[0.08em] text-[var(--ink-3)]">
                   March 2026 &nbsp;·&nbsp; Perhentian Besar, Malaysia
                 </div>
-                <Link href="/journal/marriott-perhentian" className="btn solid">
-                  Read the review
+                <Link href={`/journal/${featured.slug}`} className="btn solid">
+                  {homePage?.coverStory?.buttonText || "Read the review"}
                   <ArrowRight size={14} strokeWidth={1.6} />
                 </Link>
               </div>
               <div className="mt-10 grid grid-cols-2 gap-[18px] border-t border-[var(--rule)] pt-6">
-                <Stat label="Nights stayed" value="7" />
-                <Stat label="Verdict" value="Send a friend" />
-                <Stat label="Best for" value="Slow couples" />
+                {coverStats.slice(0, 4).map((stat) => (
+                  <Stat key={stat.label} label={stat.label || ""} value={stat.value || ""} />
+                ))}
                 <Stat label="Avoid in" value="Nov — Feb" />
               </div>
             </div>
@@ -314,13 +353,16 @@ export default async function Home() {
 
       <section className="border-b border-[var(--rule)]">
         <div className="container py-24 lg:py-32">
-          <SectionHead kicker="Browse" title="Five ways in." />
+          <SectionHead
+            kicker={homePage?.browseSection?.kicker || "Browse"}
+            title={homePage?.browseSection?.title || "Five ways in."}
+          />
           <div className="cat-grid">
-            {categories.map((category, index) => (
-              <Link key={category.id} href={`/${category.id}`} className="cat-tile flex flex-col gap-3.5">
+            {browseTiles.map((category, index) => (
+              <Link key={category.href} href={category.href} className="cat-tile flex flex-col gap-3.5">
                 <div className="flex justify-between">
                   <span className="mono text-[var(--ink-3)]">0{index + 1}</span>
-                  <span className="mono text-[var(--ink-3)]">{category.count} entries</span>
+                  <span className="mono text-[var(--ink-3)]">{category.count}</span>
                 </div>
                 <h3 className="serif m-0 mt-8 text-[34px] font-normal leading-none tracking-[-0.01em]">
                   {category.label}
@@ -338,7 +380,12 @@ export default async function Home() {
 
       <section className="border-b border-[var(--rule)]">
         <div className="container py-24 lg:py-32">
-          <SectionHead kicker="The latest" title="Recently filed." action="See all" href="/stays" />
+          <SectionHead
+            kicker={homePage?.latestSection?.kicker || "The latest"}
+            title={homePage?.latestSection?.title || "Recently filed."}
+            action={homePage?.latestSection?.actionText || "See all"}
+            href={homePage?.latestSection?.actionHref || "/stays"}
+          />
           <div className="grid gap-10 lg:grid-cols-3">
             {latest.slice(0, 3).map((review) => (
               <ReviewCard key={review.id} review={review} />
@@ -349,7 +396,10 @@ export default async function Home() {
 
       <section className="border-b border-[var(--rule)]">
         <div className="container py-24 lg:py-32">
-          <SectionHead kicker="Field map" title="By place." />
+          <SectionHead
+            kicker={homePage?.placeSection?.kicker || "Field map"}
+            title={homePage?.placeSection?.title || "By place."}
+          />
           <div className="grid gap-14 lg:grid-cols-[1.3fr_1fr]">
             <div
               className="relative aspect-[16/11] overflow-hidden border border-[var(--rule)] bg-[var(--paper-2)]"
@@ -405,7 +455,7 @@ export default async function Home() {
               <div className="mono absolute bottom-4 right-4">— drawn from memory, mostly accurate</div>
             </div>
             <div>
-              {activeDestinations.map((destination, index) => (
+              {editablePlaces.map((destination, index) => (
                 <Link
                   key={destination.name}
                   href={`/places/${"slug" in destination ? destination.slug : ""}`}

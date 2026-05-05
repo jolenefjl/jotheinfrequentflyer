@@ -53,6 +53,61 @@ export type SanityPlace = {
   lng?: number;
 };
 
+export type HomeTile = {
+  label: string;
+  href: string;
+  count: string;
+  blurb: string;
+  visible?: boolean;
+};
+
+export type HomePageContent = {
+  hero?: {
+    imageUrl?: string;
+    eyebrowLeft?: string;
+    eyebrowRight?: string;
+    headline?: string;
+    intro?: string;
+    currentLabel?: string;
+    currentValue?: string;
+    photoCredit?: string;
+  };
+  coverStory?: {
+    kicker?: string;
+    issueLabel?: string;
+    entry?: SanityEditorialEntry;
+    badge?: string;
+    secondaryBadge?: string;
+    ratingLine?: string;
+    dateLine?: string;
+    buttonText?: string;
+    stats?: { label?: string; value?: string }[];
+  };
+  browseSection?: {
+    kicker?: string;
+    title?: string;
+    tiles?: HomeTile[];
+  };
+  latestSection?: {
+    kicker?: string;
+    title?: string;
+    actionText?: string;
+    actionHref?: string;
+    entries?: SanityEditorialEntry[];
+  };
+  placeSection?: {
+    kicker?: string;
+    title?: string;
+    mapLabelLeft?: string;
+    mapLabelRight?: string;
+    mapNote?: string;
+    places?: SanityPlace[];
+  };
+  newsletterSection?: {
+    kicker?: string;
+  };
+};
+
 const categoryByType: Record<string, EditorialCategory> = {
   blogPost: "tips",
   stayReview: "stays",
@@ -60,6 +115,7 @@ const categoryByType: Record<string, EditorialCategory> = {
   experience: "experiences",
   kidsContent: "kids",
   topTip: "tips",
+  cityGuide: "tips",
 };
 
 const fallbackPhotoByCategory: Record<EditorialCategory, EditorialReview["photo"]> = {
@@ -70,8 +126,9 @@ const fallbackPhotoByCategory: Record<EditorialCategory, EditorialReview["photo"
   tips: "rose",
 };
 
-const entriesQuery = `
-*[_type in ["blogPost", "stayReview", "foodEntry", "experience", "kidsContent", "topTip"]] | order(coalesce(publishedDate, _createdAt) desc) {
+const entryTypes = `"blogPost", "stayReview", "foodEntry", "experience", "kidsContent", "topTip", "cityGuide"`;
+
+const entryProjection = `
   _id,
   _type,
   title,
@@ -110,6 +167,11 @@ const entriesQuery = `
     twitterCardDescription,
     "twitterCardImage": twitterCardImage.asset->url
   }
+`;
+
+const entriesQuery = `
+*[_type in [${entryTypes}]] | order(coalesce(publishedDate, _createdAt) desc) {
+  ${entryProjection}
 }
 `;
 
@@ -269,4 +331,100 @@ export async function getPlaces(options?: { fallback?: boolean }): Promise<Sanit
 export async function getPlaceBySlug(slug: string): Promise<SanityPlace | undefined> {
   const places = await getPlaces();
   return places.find((place) => place.slug === slug);
+}
+
+function normalizePlace(place: Record<string, unknown>): SanityPlace {
+  return {
+    id: String(place._id || place.slug),
+    slug: String(place.slug || ""),
+    name: String(place.name || ""),
+    country: String(place.country || ""),
+    entriesCount: Number(place.entriesCount || 0),
+    joTake: typeof place.joTake === "string" ? place.joTake : undefined,
+    lat: typeof place.lat === "number" ? place.lat : undefined,
+    lng: typeof place.lng === "number" ? place.lng : undefined,
+  };
+}
+
+export async function getHomePageContent(): Promise<HomePageContent | null> {
+  const data = await sanityQuery<HomePageContent>(`
+    *[_type == "homePage"][0]{
+      hero{
+        "imageUrl": image.asset->url,
+        eyebrowLeft,
+        eyebrowRight,
+        headline,
+        intro,
+        currentLabel,
+        currentValue,
+        photoCredit
+      },
+      coverStory{
+        kicker,
+        issueLabel,
+        entry->{${entryProjection}},
+        badge,
+        secondaryBadge,
+        ratingLine,
+        dateLine,
+        buttonText,
+        stats
+      },
+      browseSection,
+      latestSection{
+        kicker,
+        title,
+        actionText,
+        actionHref,
+        entries[]->{${entryProjection}}
+      },
+      placeSection{
+        kicker,
+        title,
+        mapLabelLeft,
+        mapLabelRight,
+        mapNote,
+        places[]->{
+          _id,
+          name,
+          country,
+          "slug": slug.current,
+          entriesCount,
+          joTake,
+          "lat": coordinates.lat,
+          "lng": coordinates.lng
+        }
+      },
+      newsletterSection
+    }
+  `);
+
+  if (!data) {
+    return null;
+  }
+
+  if (data.coverStory?.entry) {
+    data.coverStory.entry =
+      normalizeEntry(data.coverStory.entry as unknown as Record<string, unknown>) ||
+      data.coverStory.entry;
+  }
+
+  if (data.latestSection?.entries?.length) {
+    data.latestSection.entries = data.latestSection.entries
+      .map((entry) => normalizeEntry(entry as unknown as Record<string, unknown>))
+      .filter(Boolean) as SanityEditorialEntry[];
+  }
+
+  if (data.placeSection?.places?.length) {
+    data.placeSection.places = data.placeSection.places.map((place) =>
+      normalizePlace(place as unknown as Record<string, unknown>),
+    );
+  }
+
+  return data;
+}
+
+export async function hasVisibleCityGuides() {
+  const count = await sanityQuery<number>(`count(*[_type == "cityGuide" && isPublishedToMenu == true])`);
+  return Boolean(count && count > 0);
 }

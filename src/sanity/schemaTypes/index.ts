@@ -1,7 +1,9 @@
 import { blogPost } from "./blogPost";
+import { cityGuide } from "./cityGuide";
 import { destination } from "./destination";
 import { experience } from "./experienceReview";
 import { foodEntry } from "./foodReview";
+import { homePage } from "./homePage";
 import { kidsContent } from "./kidsContent";
 import { newsletterSettings, siteSettings, socialSharingSettings } from "./settings";
 import { stayReview } from "./stayReview";
@@ -17,7 +19,9 @@ export const schemaTypes = [
   siteSettings,
   socialSharingSettings,
   newsletterSettings,
+  homePage,
   blogPost,
+  cityGuide,
   destination,
   stayReview,
   experience,
