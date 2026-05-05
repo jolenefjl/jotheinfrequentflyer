@@ -2,6 +2,7 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
 import { schemaTypes } from "@/sanity/schemaTypes";
+import { publishHomePageAction } from "@/sanity/documentActions/publish-home-page";
 
 export default defineConfig({
   name: "default",
@@ -12,5 +13,15 @@ export default defineConfig({
   plugins: [structureTool(), visionTool()],
   schema: {
     types: schemaTypes,
+  },
+  document: {
+    actions: (previousActions, context) => {
+      if (context.schemaType === "homePage") {
+        const withoutDefaultPublish = previousActions.filter((action) => action.action !== "publish");
+        return [publishHomePageAction, ...withoutDefaultPublish];
+      }
+
+      return previousActions;
+    },
   },
 });
