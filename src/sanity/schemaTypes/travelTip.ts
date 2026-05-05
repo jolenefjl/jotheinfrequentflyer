@@ -1,5 +1,17 @@
 import { defineField, defineType } from "sanity";
-import { bodyField, imageField, locationField, seoFields, slugField, titleField } from "./shared";
+import {
+  authorField,
+  bodyField,
+  coverImageField,
+  excerptField,
+  imageField,
+  locationField,
+  ratingField,
+  readingTimeField,
+  seoFields,
+  slugField,
+  titleField,
+} from "./shared";
 
 export const topTip = defineType({
   name: "topTip",
@@ -8,10 +20,15 @@ export const topTip = defineType({
   fields: [
     titleField,
     slugField,
+    excerptField,
     bodyField,
     imageField,
+    coverImageField,
     locationField,
+    readingTimeField,
+    ratingField,
     defineField({ name: "verdict", title: "Verdict", type: "string" }),
+    authorField,
     defineField({ name: "publishedDate", title: "Published date", type: "date" }),
     ...seoFields,
   ],

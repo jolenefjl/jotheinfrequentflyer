@@ -1,5 +1,17 @@
 import { defineField, defineType } from "sanity";
-import { bodyField, imageField, locationField, seoFields, slugField, titleField } from "./shared";
+import {
+  authorField,
+  bodyField,
+  coverImageField,
+  excerptField,
+  imageField,
+  locationField,
+  ratingField,
+  readingTimeField,
+  seoFields,
+  slugField,
+  titleField,
+} from "./shared";
 
 export const experience = defineType({
   name: "experience",
@@ -8,12 +20,17 @@ export const experience = defineType({
   fields: [
     titleField,
     slugField,
+    excerptField,
     bodyField,
     imageField,
+    coverImageField,
     locationField,
+    readingTimeField,
+    ratingField,
     defineField({ name: "duration", title: "Duration", type: "string" }),
     defineField({ name: "verdict", title: "Verdict", type: "string" }),
     defineField({ name: "bestFor", title: "Best for", type: "array", of: [{ type: "string" }] }),
+    authorField,
     defineField({ name: "publishedDate", title: "Published date", type: "date" }),
     ...seoFields,
   ],

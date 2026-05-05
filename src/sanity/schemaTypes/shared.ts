@@ -156,6 +156,45 @@ export const imageField = defineField({
   ],
 });
 
+export const coverImageField = defineField({
+  name: "coverImage",
+  title: "Cover image",
+  type: "image",
+  options: { hotspot: true },
+  fields: [
+    defineField({ name: "alt", title: "Alt text", type: "string" }),
+    defineField({ name: "caption", title: "Caption", type: "string" }),
+    defineField({ name: "credit", title: "Image credit", type: "string" }),
+  ],
+});
+
+export const excerptField = defineField({
+  name: "excerpt",
+  title: "Excerpt",
+  type: "text",
+  rows: 3,
+});
+
+export const readingTimeField = defineField({
+  name: "readingTime",
+  title: "Reading time",
+  type: "string",
+});
+
+export const ratingField = defineField({
+  name: "rating",
+  title: "Rating",
+  type: "number",
+  validation: (Rule) => Rule.min(0).max(5),
+});
+
+export const authorField = defineField({
+  name: "author",
+  title: "Author",
+  type: "string",
+  initialValue: "Jo",
+});
+
 export const locationField = defineField({
   name: "location",
   title: "Location",
