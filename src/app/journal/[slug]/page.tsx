@@ -290,7 +290,7 @@ function StayReviewJournalPage({
               {country ? ` - ${country}` : ""}
               {monthYear ? ` - ${monthYear}` : ""}
             </div>
-            <h1 className="serif mx-auto m-0 max-w-[920px] text-[40px] font-normal leading-[1.05] tracking-[-0.02em]">
+            <h1 className="serif mx-auto m-0 max-w-[980px] text-[48px] font-normal leading-[1.04] tracking-[-0.02em]">
               {review.title}
             </h1>
             <p className="serif mx-auto mt-7 max-w-[720px] text-[22px] italic leading-[1.4] text-[var(--ink-2)]">
@@ -307,7 +307,6 @@ function StayReviewJournalPage({
                       strokeWidth={1.5}
                     />
                   ))}
-                  <span className="ml-1 text-[var(--ink-2)]">{average.toFixed(1)}</span>
                 </span>
               ) : null}
             </div>
@@ -315,9 +314,9 @@ function StayReviewJournalPage({
 
           <figure className="m-0">
             <div className="relative aspect-[16/8] overflow-hidden bg-[var(--paper-2)]">
-              <EditorialPhoto src={image} alt={review.title} label={review.photoLabel} priority />
+              <EditorialPhoto src={image} alt={review.title} priority />
             </div>
-            <figcaption className="mono border-b border-[var(--rule)] py-3 text-center text-[var(--ink-3)]">
+            <figcaption className="mono py-3 text-center text-[var(--ink-3)]">
               {review.heroCaption || review.photoLabel}
             </figcaption>
           </figure>
