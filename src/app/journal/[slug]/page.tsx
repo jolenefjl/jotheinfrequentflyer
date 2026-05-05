@@ -222,6 +222,33 @@ function scoreAverage(review: SanityEditorialEntry) {
   return review.rating;
 }
 
+function formatMonthYear(value?: string) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(`${value}T00:00:00`);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("en", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+}
+
+function getCountryFromLocation(value?: string) {
+  if (!value) {
+    return "";
+  }
+
+  const parts = value.split(",").map((part) => part.trim()).filter(Boolean);
+  return parts.at(-1) || value;
+}
+
 function StayReviewJournalPage({
   review,
   related,
@@ -232,6 +259,8 @@ function StayReviewJournalPage({
   const headings = extractH2Links(review.body);
   const average = scoreAverage(review);
   const image = review.imageUrl || editorialPhotos[review.photo];
+  const monthYear = formatMonthYear(review.date);
+  const country = getCountryFromLocation(review.location);
   const onThisPage = headings.length
     ? headings
     : [
@@ -258,18 +287,16 @@ function StayReviewJournalPage({
           <div className="mx-auto max-w-[1080px] pb-16 text-center lg:pb-20">
             <div className="mono mb-7 text-[var(--accent-deep)]">
               * Stay
-              {review.location ? ` - ${review.location}` : ""}
-              {review.date ? ` - ${review.date}` : ""}
+              {country ? ` - ${country}` : ""}
+              {monthYear ? ` - ${monthYear}` : ""}
             </div>
-            <h1 className="serif m-0 text-[clamp(56px,8.5vw,118px)] font-normal leading-[0.9] tracking-[-0.05em]">
+            <h1 className="serif mx-auto m-0 max-w-[920px] text-[40px] font-normal leading-[1.05] tracking-[-0.02em]">
               {review.title}
             </h1>
-            <p className="serif mx-auto mt-8 max-w-[760px] text-[clamp(22px,2.3vw,30px)] italic leading-[1.35] text-[var(--ink-2)]">
+            <p className="serif mx-auto mt-7 max-w-[720px] text-[22px] italic leading-[1.4] text-[var(--ink-2)]">
               {review.dek}
             </p>
             <div className="mono mt-9 flex flex-wrap items-center justify-center gap-4 text-[var(--ink-3)]">
-              {review.date ? <span>{review.date}</span> : null}
-              {review.readTime ? <span>{review.readTime} read</span> : null}
               {average != null ? (
                 <span className="inline-flex items-center gap-1.5 text-[var(--accent-deep)]">
                   {Array.from({ length: 5 }).map((_, index) => (
@@ -336,16 +363,21 @@ function StayReviewJournalPage({
 function UsefulInfo({ review }: { review: SanityEditorialEntry }) {
   return (
     <div className="border-y border-dashed border-[var(--rule)] py-6">
-      <InfoLine label="Price" value={review.price} />
-      <InfoLine label="Good for" value={review.goodFor || review.bestFor?.join(", ")} />
-      <InfoLine label="Best time" value={review.bestTime} />
-      <InfoLine label="Avoid" value={review.avoid} />
-      {review.websiteUrl ? (
-        <a href={review.websiteUrl} target="_blank" rel="noreferrer" className="btn mt-5 w-full justify-between">
-          Hotel website
-          <ExternalLink size={14} />
-        </a>
-      ) : null}
+      <InfoLine label="Price" value={review.price || "Add price in Sanity"} />
+      <InfoLine label="Good for" value={review.goodFor || review.bestFor?.join(", ") || "Add good-for note in Sanity"} />
+      <InfoLine label="Best time" value={review.bestTime || "Add best time in Sanity"} />
+      <InfoLine label="Avoid" value={review.avoid || "Add avoid note in Sanity"} />
+      <div className="mb-0">
+        <div className="mono mb-2 text-[var(--ink-3)]">Website</div>
+        {review.websiteUrl ? (
+          <a href={review.websiteUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm leading-[1.55] text-[var(--ink-2)] underline decoration-[var(--accent)] underline-offset-4">
+            Hotel website
+            <ExternalLink size={13} />
+          </a>
+        ) : (
+          <p className="m-0 text-sm leading-[1.55] text-[var(--ink-2)]">Add website in Sanity</p>
+        )}
+      </div>
     </div>
   );
 }
@@ -370,18 +402,16 @@ function StayReviewBottom({
   review: SanityEditorialEntry;
   average: number | null;
 }) {
-  const loved = review.loved?.length ? review.loved : [];
-  const lessSo = review.lessSo?.length ? review.lessSo : [];
+  const loved = review.loved?.length ? review.loved : ["Add loved notes in Sanity"];
+  const lessSo = review.lessSo?.length ? review.lessSo : ["Add less-so notes in Sanity"];
 
   return (
     <section className="border-b border-[var(--rule)]">
       <div className="container py-20 lg:py-28">
-        {(loved.length || lessSo.length) ? (
-          <div className="grid border border-[var(--rule)] lg:grid-cols-2">
-            <ListPanel title="+ Loved" items={loved} tone="positive" />
-            <ListPanel title="- Less so" items={lessSo} />
-          </div>
-        ) : null}
+        <div className="grid border border-[var(--rule)] lg:grid-cols-2">
+          <ListPanel title="+ Loved" items={loved} tone="positive" />
+          <ListPanel title="- Less so" items={lessSo} />
+        </div>
 
         <div className="mt-14 border border-[var(--rule)] p-8 lg:p-10">
           <div className="mb-9 flex items-center justify-between gap-6">
