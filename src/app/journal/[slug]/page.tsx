@@ -1,18 +1,23 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Bookmark, Star } from "lucide-react";
+import { ArrowLeft, ArrowRight, ExternalLink, Star } from "lucide-react";
 import {
   EditorialPhoto,
   ReviewCard,
   SectionHead,
 } from "@/components/editorial-atoms";
-import { RichText } from "@/components/rich-text";
+import { RichText, slugifyHeading } from "@/components/rich-text";
 import {
   editorialPhotos,
   reviewsForCategory,
 } from "@/lib/editorial-data";
-import { getEditorialEntries, getEditorialEntryBySlug } from "@/lib/sanity-content";
+import {
+  getEditorialEntries,
+  getEditorialEntryBySlug,
+  stayScoreCriteria,
+  type SanityEditorialEntry,
+} from "@/lib/sanity-content";
 
 export const revalidate = 60;
 export const dynamicParams = true;
@@ -70,6 +75,10 @@ export default async function JournalPage({
   const related = reviewsForCategory(review.category)
     .filter((item) => item.slug !== review.slug)
     .slice(0, 3);
+
+  if (review.category === "stays") {
+    return <StayReviewJournalPage review={review} related={related} />;
+  }
 
   return (
     <main className="page">
@@ -132,10 +141,6 @@ export default async function JournalPage({
                   <div className="serif text-[42px] italic">Notes</div>
                 )}
               </div>
-              <button className="btn">
-                <Bookmark size={14} />
-                Save
-              </button>
             </div>
           </div>
         </div>
@@ -224,6 +229,214 @@ export default async function JournalPage({
             action="View section"
             href={`/${review.category}`}
           />
+          <div className="grid gap-12 lg:grid-cols-3">
+            {related.length > 0 ? (
+              related.map((item) => <ReviewCard key={item.id} review={item} />)
+            ) : (
+              <Link href="/" className="btn solid w-fit">
+                Back home
+                <ArrowRight size={14} />
+              </Link>
+            )}
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function extractH2Links(body?: unknown[]) {
+  if (!Array.isArray(body)) {
+    return [];
+  }
+
+  return body
+    .filter((block): block is { style?: string; children?: { text?: string }[] } => {
+      return (
+        typeof block === "object" &&
+        block !== null &&
+        (block as { _type?: string })._type === "block" &&
+        (block as { style?: string }).style === "h2"
+      );
+    })
+    .map((block) => {
+      const title = block.children?.map((child) => child.text || "").join("") || "";
+      return { title, href: `#${slugifyHeading(title)}` };
+    })
+    .filter((item) => item.title && item.href !== "#");
+}
+
+function scoreAverage(review: SanityEditorialEntry) {
+  const values = stayScoreCriteria
+    .map((item) => review.stayScores?.[item.key])
+    .filter((value): value is number => typeof value === "number");
+
+  if (values.length) {
+    return Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(1));
+  }
+
+  return review.rating;
+}
+
+function StayReviewJournalPage({
+  review,
+  related,
+}: {
+  review: SanityEditorialEntry;
+  related: ReturnType<typeof reviewsForCategory>;
+}) {
+  const headings = extractH2Links(review.body);
+  const average = scoreAverage(review);
+  const image = review.imageUrl || editorialPhotos[review.photo];
+
+  return (
+    <main className="page">
+      <section className="border-b border-[var(--ink)]">
+        <div className="container py-16 lg:py-24">
+          <Link href="/stays" className="mono mb-12 inline-flex items-center gap-2 text-[var(--ink-3)]">
+            <ArrowLeft size={13} strokeWidth={1.6} />
+            Back to stays
+          </Link>
+
+          <div className="stay-review-hero grid items-center">
+            <div className="relative aspect-[4/5] overflow-hidden">
+              <EditorialPhoto src={image} alt={review.title} label={review.photoLabel} priority />
+              <div className="absolute left-4 top-4 flex gap-1.5">
+                <span className="tag solid">Stay</span>
+                {review.location ? (
+                  <span className="tag border-transparent bg-[rgba(245,242,236,0.92)]">
+                    {review.location}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            <div>
+              <div className="mono mb-5 text-[var(--accent-deep)]">
+                {average != null ? `${average.toFixed(1)} / 5` : "Stay review"}
+                {review.readTime ? ` - ${review.readTime} read` : ""}
+              </div>
+              <h1 className="serif m-0 text-[clamp(48px,7vw,104px)] font-normal leading-[0.92] tracking-[-0.045em]">
+                {review.title}
+              </h1>
+              <p className="serif mt-8 max-w-[720px] text-[clamp(22px,2.4vw,31px)] leading-[1.3] text-[var(--ink-2)]">
+                {review.verdict || review.dek}
+              </p>
+              <div className="mono mt-8 text-[var(--ink-3)]">
+                {review.date || "Draft"} {review.location ? ` · ${review.location}` : ""}
+              </div>
+              {review.websiteUrl ? (
+                <a href={review.websiteUrl} target="_blank" rel="noreferrer" className="btn solid mt-8">
+                  Visit website
+                  <ExternalLink size={14} />
+                </a>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-[var(--rule)]">
+        <div className="container grid gap-16 py-24 lg:grid-cols-[minmax(0,1.55fr)_340px] lg:py-32">
+          <article className="max-w-none">
+            <section className="mb-16 border-y border-[var(--rule)] py-8">
+              <div className="mb-6 flex items-baseline justify-between gap-6">
+                <div>
+                  <div className="mono mb-2 text-[var(--ink-3)]">Jo Score</div>
+                  <h2 className="serif m-0 text-[clamp(34px,4vw,56px)] font-normal leading-none">
+                    {average != null ? `${average.toFixed(1)} / 5` : "Unscored"}
+                  </h2>
+                </div>
+                <div className="mono text-[var(--ink-3)]">point system out of 5</div>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                {stayScoreCriteria.map((item) => {
+                  const value = review.stayScores?.[item.key];
+                  return (
+                    <div key={item.key} className="border-t border-[var(--rule)] pt-4">
+                      <div className="flex items-baseline justify-between gap-4">
+                        <h3 className="serif m-0 text-[24px] font-normal leading-[1.1]">{item.label}</h3>
+                        <span className="mono whitespace-nowrap">
+                          {typeof value === "number" ? value.toFixed(1) : "-"} / 5
+                        </span>
+                      </div>
+                      <p className="m-0 mt-2 text-sm leading-[1.45] text-[var(--ink-3)]">{item.subtitle}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {review.body?.length ? (
+              <RichText value={review.body} />
+            ) : (
+              <>
+                <h2 id="first-impression" className="serif m-0 mb-5 text-[42px] font-normal">
+                  First impression
+                </h2>
+                <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">
+                  This is starter copy for the stay review format. Add H2 headings in Sanity and
+                  they will automatically appear in the “On this page” navigation.
+                </p>
+                <h2 id="worth-it" className="serif mt-14 mb-5 text-[42px] font-normal">
+                  Worth it?
+                </h2>
+                <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">
+                  The review should answer the infrequent traveller question directly: was this
+                  stay worth using precious days off?
+                </p>
+              </>
+            )}
+          </article>
+
+          <aside className="lg:border-l lg:border-[var(--rule)] lg:pl-8">
+            <div className="sticky top-36 space-y-8">
+              <div>
+                <div className="mono mb-4 text-[var(--ink-3)]">On this page</div>
+                {(headings.length ? headings : [{ title: "First impression", href: "#first-impression" }, { title: "Worth it?", href: "#worth-it" }]).map((item) => (
+                  <a
+                    key={item.href}
+                    href={item.href}
+                    className="block border-t border-[var(--rule)] py-3 text-sm text-[var(--ink-2)] transition-colors hover:text-[var(--ink)]"
+                  >
+                    {item.title}
+                  </a>
+                ))}
+              </div>
+
+              <div className="border-t border-[var(--rule)] pt-6">
+                <div className="mono mb-4 text-[var(--ink-3)]">Quick verdict</div>
+                <p className="serif m-0 text-[26px] leading-[1.15]">{review.verdict || review.dek}</p>
+              </div>
+
+              <div className="grid gap-5 border-t border-[var(--rule)] pt-6">
+                {review.bestFor?.length ? (
+                  <div>
+                    <div className="mono mb-2 text-[var(--ink-3)]">Best for</div>
+                    <p className="m-0 text-sm leading-[1.6] text-[var(--ink-2)]">{review.bestFor.join(", ")}</p>
+                  </div>
+                ) : null}
+                {review.avoid ? (
+                  <div>
+                    <div className="mono mb-2 text-[var(--ink-3)]">Avoid if</div>
+                    <p className="m-0 text-sm leading-[1.6] text-[var(--ink-2)]">{review.avoid}</p>
+                  </div>
+                ) : null}
+                {review.websiteUrl ? (
+                  <a href={review.websiteUrl} target="_blank" rel="noreferrer" className="btn w-fit">
+                    Website
+                    <ExternalLink size={14} />
+                  </a>
+                ) : null}
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section>
+        <div className="container py-24 lg:py-32">
+          <SectionHead kicker="Keep reading" title="More stays." action="View stays" href="/stays" />
           <div className="grid gap-12 lg:grid-cols-3">
             {related.length > 0 ? (
               related.map((item) => <ReviewCard key={item.id} review={item} />)

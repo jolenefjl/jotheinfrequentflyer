@@ -20,6 +20,8 @@ export type SanityEditorialEntry = EditorialReview & {
   duration?: string;
   dish?: string;
   author?: string;
+  websiteUrl?: string;
+  stayScores?: StayScoreValues;
 };
 
 export type SiteSettings = {
@@ -126,6 +128,35 @@ const fallbackPhotoByCategory: Record<EditorialCategory, EditorialReview["photo"
   tips: "rose",
 };
 
+export type StayScoreKey =
+  | "walletCry"
+  | "breakfastTest"
+  | "gramWorthy"
+  | "welcomeFactor"
+  | "worthDaysOff";
+
+export type StayScoreValues = Partial<Record<StayScoreKey, number>>;
+
+export const stayScoreCriteria: { key: StayScoreKey; label: string; subtitle: string }[] = [
+  { key: "walletCry", label: "Did My Wallet Cry?", subtitle: "value for money" },
+  { key: "breakfastTest", label: "The Breakfast Test", subtitle: "because a bad breakfast ruins everything" },
+  { key: "gramWorthy", label: "Gram-Worthy?", subtitle: "is it as photogenic as the website promised" },
+  { key: "welcomeFactor", label: "The Welcome Factor", subtitle: "did the service live up to expectations?" },
+  {
+    key: "worthDaysOff",
+    label: "Worth My Precious Days Off",
+    subtitle: "the ultimate infrequent traveller question",
+  },
+];
+
+const labelByCategory: Record<EditorialCategory, string> = {
+  stays: "Stay",
+  food: "Food",
+  experiences: "Experience",
+  kids: "Kids",
+  tips: "Top tips",
+};
+
 const entryTypes = `"blogPost", "stayReview", "foodEntry", "experience", "kidsContent", "topTip", "cityGuide"`;
 
 const entryProjection = `
@@ -149,6 +180,8 @@ const entryProjection = `
   nights,
   duration,
   dish,
+  websiteUrl,
+  stayScores,
   body[]{
     ...,
     _type == "imageLayout" => {
@@ -193,7 +226,7 @@ function normalizeEntry(entry: Record<string, unknown>): SanityEditorialEntry | 
     id: String(entry._id || slug),
     slug,
     category,
-    kicker: `${category === "tips" ? "Top tips" : category.slice(0, -1)}${location ? ` - ${location}` : ""}`,
+    kicker: `${labelByCategory[category] || "Note"}${location ? ` - ${location}` : ""}`,
     title,
     dek: String(entry.excerpt || entry.verdict || "Jo's notes are being drafted in Sanity."),
     date: String(entry.publishedDate || ""),
@@ -210,6 +243,11 @@ function normalizeEntry(entry: Record<string, unknown>): SanityEditorialEntry | 
     duration: typeof entry.duration === "string" ? entry.duration : undefined,
     dish: typeof entry.dish === "string" ? entry.dish : undefined,
     author: typeof entry.author === "string" ? entry.author : undefined,
+    websiteUrl: typeof entry.websiteUrl === "string" ? entry.websiteUrl : undefined,
+    stayScores:
+      typeof entry.stayScores === "object" && entry.stayScores
+        ? (entry.stayScores as StayScoreValues)
+        : undefined,
     body: Array.isArray(entry.body) ? entry.body : undefined,
     metadata: typeof entry.metadata === "object" && entry.metadata ? (entry.metadata as SanityMetadata) : undefined,
   };

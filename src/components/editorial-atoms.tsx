@@ -9,6 +9,14 @@ import {
 } from "@/lib/editorial-data";
 import { getEditorialEntriesByCategory } from "@/lib/sanity-content";
 
+const badgeByCategory: Record<EditorialCategory, string> = {
+  stays: "Stay",
+  food: "Food",
+  experiences: "Experience",
+  kids: "Kid",
+  tips: "Tip",
+};
+
 export function EditorialPhoto({
   src,
   alt,
@@ -81,9 +89,7 @@ export function ReviewCard({ review }: { review: EditorialReview }) {
             sizes="(max-width: 1024px) 100vw, 33vw"
           />
           <div className="absolute left-3 top-3 flex gap-1.5">
-            <span className="tag solid">
-              {review.category === "tips" ? "Tip" : review.category.slice(0, -1)}
-            </span>
+            <span className="tag solid">{badgeByCategory[review.category]}</span>
           </div>
           {review.rating != null ? (
             <div className="absolute right-3 top-3 inline-flex items-center gap-1.5 bg-[rgba(245,242,236,0.92)] px-2 py-1 font-mono text-[11px] tracking-[0.06em]">

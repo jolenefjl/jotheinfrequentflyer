@@ -398,6 +398,16 @@ img {
   gap: 56px;
 }
 
+.cover-story-grid {
+  grid-template-columns: minmax(0, 0.95fr) minmax(420px, 0.85fr);
+  gap: clamp(64px, 7vw, 112px);
+}
+
+.stay-review-hero {
+  grid-template-columns: minmax(0, 0.95fr) minmax(420px, 0.9fr);
+  gap: clamp(56px, 7vw, 104px);
+}
+
 .cat-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -438,7 +448,7 @@ img {
 @media (max-width: 1080px) {
   .hero-grid {
     grid-template-columns: 1fr !important;
-    gap: 40px !important;
+    gap: 48px !important;
   }
 
   .cat-grid {
@@ -456,6 +466,11 @@ img {
   .manifesto-grid {
     grid-template-columns: 1fr;
     gap: 24px;
+  }
+
+  .stay-review-hero {
+    grid-template-columns: 1fr;
+    gap: 48px;
   }
 }
 

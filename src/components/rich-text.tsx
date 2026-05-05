@@ -15,10 +15,35 @@ type ImageLayoutValue = {
 
 const headingClass = "serif scroll-mt-32 font-normal tracking-[-0.02em] text-[var(--ink)]";
 
+function textFromChildren(children: unknown): string {
+  if (Array.isArray(children)) {
+    return children.map(textFromChildren).join("");
+  }
+
+  if (typeof children === "string" || typeof children === "number") {
+    return String(children);
+  }
+
+  return "";
+}
+
+export function slugifyHeading(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/['"]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 const components: PortableTextComponents = {
   block: {
     h1: ({ children }) => <h1 className={`${headingClass} mt-16 text-[52px] leading-none`}>{children}</h1>,
-    h2: ({ children }) => <h2 className={`${headingClass} mt-14 text-[42px] leading-[1.05]`}>{children}</h2>,
+    h2: ({ children }) => (
+      <h2 id={slugifyHeading(textFromChildren(children))} className={`${headingClass} mt-14 text-[42px] leading-[1.05]`}>
+        {children}
+      </h2>
+    ),
     h3: ({ children }) => <h3 className={`${headingClass} mt-12 text-[34px] leading-[1.1]`}>{children}</h3>,
     h4: ({ children }) => <h4 className={`${headingClass} mt-10 text-[28px] leading-[1.15]`}>{children}</h4>,
     h5: ({ children }) => <h5 className={`${headingClass} mt-9 text-[22px] leading-[1.2]`}>{children}</h5>,

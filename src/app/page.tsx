@@ -28,6 +28,14 @@ type Review = {
   featured?: boolean;
 };
 
+const badgeByCategory: Record<Review["category"], string> = {
+  stays: "Stay",
+  food: "Food",
+  experiences: "Experience",
+  kids: "Kid",
+  tips: "Tip",
+};
+
 const photos = {
   ocean:
     "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1800&q=85",
@@ -305,7 +313,7 @@ export default async function Home() {
               {homePage?.coverStory?.issueLabel || "Issue 047 / May 2026"}
             </span>
           </div>
-          <div className="hero-grid grid grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] items-stretch gap-14">
+          <div className="cover-story-grid hero-grid grid items-stretch">
             <div className="relative aspect-[4/5] overflow-hidden">
               <Photo
                 src={featured.imageUrl || photos[featured.photo]}
@@ -317,14 +325,15 @@ export default async function Home() {
               <div className="absolute left-[18px] top-[18px] flex gap-1.5">
                 <span className="tag solid">{homePage?.coverStory?.badge || "Cover"}</span>
                 <span className="tag border-transparent bg-[rgba(245,242,236,0.92)]">
-                  Stay · Malaysia
+                  {homePage?.coverStory?.secondaryBadge || featured.kicker}
                 </span>
               </div>
             </div>
             <div className="flex flex-col justify-between pt-2">
               <div>
                 <div className="mono mb-[18px] text-[var(--accent-deep)]">
-                  ★ ★ ★ ★ ☆ &nbsp; — &nbsp; 4.2 / 5 &nbsp; — &nbsp; 12 min read
+                  {homePage?.coverStory?.ratingLine ||
+                    `${featured.rating?.toFixed(1) || "Notes"} / 5 - ${featured.readTime} read`}
                 </div>
                 <h2 className="serif m-0 mb-[22px] text-[clamp(40px,5vw,68px)] font-normal leading-none tracking-[-0.02em]">
                   {featured.title}
@@ -333,7 +342,7 @@ export default async function Home() {
                   {featured.dek}
                 </p>
                 <div className="mono mb-7 tracking-[0.08em] text-[var(--ink-3)]">
-                  March 2026 &nbsp;·&nbsp; Perhentian Besar, Malaysia
+                  {homePage?.coverStory?.dateLine || `${featured.date} · ${featured.location}`}
                 </div>
                 <Link href={`/journal/${featured.slug}`} className="btn solid">
                   {homePage?.coverStory?.buttonText || "Read the review"}
@@ -344,7 +353,6 @@ export default async function Home() {
                 {coverStats.slice(0, 4).map((stat) => (
                   <Stat key={stat.label} label={stat.label || ""} value={stat.value || ""} />
                 ))}
-                <Stat label="Avoid in" value="Nov — Feb" />
               </div>
             </div>
           </div>
@@ -591,7 +599,7 @@ function ReviewCard({ review }: { review: Review }) {
           />
           <div className="absolute left-3 top-3 flex gap-1.5">
             <span className="tag solid">
-              {review.category === "tips" ? "Tip" : review.category.slice(0, -1)}
+              {badgeByCategory[review.category]}
             </span>
           </div>
           {review.rating != null ? (

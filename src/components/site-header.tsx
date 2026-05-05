@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bookmark, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { hasVisibleCityGuides } from "@/lib/sanity-content";
 
 const navItems = [
@@ -34,9 +34,6 @@ export async function SiteHeader() {
             <span className="mono text-[var(--ink-3)]">Vol. III</span>
             <button className="iconbtn" aria-label="Search">
               <Search size={16} strokeWidth={1.6} />
-            </button>
-            <button className="iconbtn" aria-label="Saved">
-              <Bookmark size={16} strokeWidth={1.6} />
             </button>
           </div>
         </div>
