@@ -32,6 +32,32 @@ export const stayReview = defineType({
       title: "Website link",
       type: "url",
     }),
+    defineField({ name: "price", title: "Price", type: "string", description: "Example: $$$$ - from MYR 1,650 / night" }),
+    defineField({ name: "goodFor", title: "Good for", type: "string", description: "Short useful-info line." }),
+    defineField({ name: "bestTime", title: "Best time", type: "string", description: "Example: April - early October" }),
+    defineField({
+      name: "loved",
+      title: "Loved",
+      type: "array",
+      of: [{ type: "string" }],
+    }),
+    defineField({
+      name: "lessSo",
+      title: "Less so",
+      type: "array",
+      of: [{ type: "string" }],
+    }),
+    defineField({
+      name: "disclosure",
+      title: "Disclosure",
+      type: "text",
+      rows: 3,
+    }),
+    defineField({
+      name: "heroCaption",
+      title: "Hero image caption",
+      type: "string",
+    }),
     defineField({
       name: "stayScores",
       title: "Stay scoring",

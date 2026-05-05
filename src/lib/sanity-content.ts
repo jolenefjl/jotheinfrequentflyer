@@ -22,6 +22,13 @@ export type SanityEditorialEntry = EditorialReview & {
   author?: string;
   websiteUrl?: string;
   stayScores?: StayScoreValues;
+  price?: string;
+  goodFor?: string;
+  bestTime?: string;
+  loved?: string[];
+  lessSo?: string[];
+  disclosure?: string;
+  heroCaption?: string;
 };
 
 export type SiteSettings = {
@@ -182,6 +189,13 @@ const entryProjection = `
   dish,
   websiteUrl,
   stayScores,
+  price,
+  goodFor,
+  bestTime,
+  loved,
+  lessSo,
+  disclosure,
+  heroCaption,
   body[]{
     ...,
     _type == "imageLayout" => {
@@ -248,6 +262,13 @@ function normalizeEntry(entry: Record<string, unknown>): SanityEditorialEntry | 
       typeof entry.stayScores === "object" && entry.stayScores
         ? (entry.stayScores as StayScoreValues)
         : undefined,
+    price: typeof entry.price === "string" ? entry.price : undefined,
+    goodFor: typeof entry.goodFor === "string" ? entry.goodFor : undefined,
+    bestTime: typeof entry.bestTime === "string" ? entry.bestTime : undefined,
+    loved: Array.isArray(entry.loved) ? (entry.loved as string[]) : undefined,
+    lessSo: Array.isArray(entry.lessSo) ? (entry.lessSo as string[]) : undefined,
+    disclosure: typeof entry.disclosure === "string" ? entry.disclosure : undefined,
+    heroCaption: typeof entry.heroCaption === "string" ? entry.heroCaption : undefined,
     body: Array.isArray(entry.body) ? entry.body : undefined,
     metadata: typeof entry.metadata === "object" && entry.metadata ? (entry.metadata as SanityMetadata) : undefined,
   };

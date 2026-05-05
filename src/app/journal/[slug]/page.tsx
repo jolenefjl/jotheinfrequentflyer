@@ -41,7 +41,11 @@ export async function generateMetadata({
 
   const title = review.metadata?.metaTitle || review.title;
   const description = review.metadata?.metaDescription || review.metadata?.ogDescription || review.dek;
-  const image = review.metadata?.ogImage || review.metadata?.twitterCardImage || review.imageUrl || editorialPhotos[review.photo];
+  const image =
+    review.metadata?.ogImage ||
+    review.metadata?.twitterCardImage ||
+    review.imageUrl ||
+    editorialPhotos[review.photo];
 
   return {
     title,
@@ -95,18 +99,9 @@ export default async function JournalPage({
           <div className="grid gap-14 lg:grid-cols-[0.72fr_1.65fr_0.7fr]">
             <div className="pt-2">
               <div className="mono mb-4 text-[var(--ink-3)]">{review.kicker}</div>
-              <div className="border-t border-[var(--rule)] py-4">
-                <div className="mono mb-1 text-[var(--ink-4)]">Filed</div>
-                <div className="text-sm text-[var(--ink-2)]">{review.date}</div>
-              </div>
-              <div className="border-t border-[var(--rule)] py-4">
-                <div className="mono mb-1 text-[var(--ink-4)]">Location</div>
-                <div className="text-sm text-[var(--ink-2)]">{review.location}</div>
-              </div>
-              <div className="border-t border-[var(--rule)] py-4">
-                <div className="mono mb-1 text-[var(--ink-4)]">Read</div>
-                <div className="text-sm text-[var(--ink-2)]">{review.readTime}</div>
-              </div>
+              <MetaItem label="Filed" value={review.date} />
+              <MetaItem label="Location" value={review.location} />
+              <MetaItem label="Read" value={review.readTime} />
             </div>
 
             <div>
@@ -177,70 +172,19 @@ export default async function JournalPage({
           </aside>
 
           <article className="max-w-none">
-            {review.body?.length ? (
-              <RichText value={review.body} />
-            ) : (
-              <>
-                <h2 id="first-impression" className="serif m-0 mb-5 text-[38px] font-normal">
-                  First impression
-                </h2>
-                <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">
-                  This is placeholder copy for the redesign, but it is shaped around the kind of note
-                  Jo will actually write: specific, opinionated, and honest about the small details
-                  that make a rare trip feel worth the effort.
-                </p>
-                <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">
-                  The useful question is not only whether a place is beautiful. It is whether the
-                  arrival feels calm, whether breakfast is worth getting out of bed for, whether the
-                  room works after a beach day, and whether the price still feels reasonable once the
-                  glow fades.
-                </p>
-              </>
-            )}
+            {review.body?.length ? <RichText value={review.body} /> : <FallbackBody />}
           </article>
 
           <aside>
             <div className="sticky top-36 border border-[var(--rule)] bg-[var(--paper-2)] p-5">
-              <div className="mono mb-4 text-[var(--ink-3)]">Jo&apos;s verdict</div>
-              <p className="serif m-0 text-[26px] leading-[1.15]">
-                Send a friend, especially if they want a soft landing before disappearing into the
-                sea.
-              </p>
-              <div className="mt-6 grid gap-3 border-t border-[var(--rule)] pt-5">
-                {["Best for slow couples", "Book the transfer early", "Avoid peak monsoon months"].map(
-                  (item) => (
-                    <div key={item} className="flex items-center gap-3 text-sm text-[var(--ink-2)]">
-                      <span className="size-1.5 bg-[var(--accent)]" />
-                      {item}
-                    </div>
-                  ),
-                )}
-              </div>
+              <div className="mono mb-4 text-[var(--ink-3)]">Jo's verdict</div>
+              <p className="serif m-0 text-[26px] leading-[1.15]">{review.verdict || review.dek}</p>
             </div>
           </aside>
         </div>
       </section>
 
-      <section>
-        <div className="container py-24 lg:py-32">
-          <SectionHead
-            kicker="Keep reading"
-            title={`More ${review.category === "tips" ? "tips" : review.category}.`}
-            action="View section"
-            href={`/${review.category}`}
-          />
-          <div className="grid gap-12 lg:grid-cols-3">
-            {related.length > 0 ? (
-              related.map((item) => <ReviewCard key={item.id} review={item} />)
-            ) : (
-              <Link href="/" className="btn solid w-fit">
-                Back home
-                <ArrowRight size={14} />
-              </Link>
-            )}
-          </div>
-        </div>
-      </section>
+      <RelatedSection related={related} category={review.category} />
     </main>
   );
 }
@@ -288,167 +232,287 @@ function StayReviewJournalPage({
   const headings = extractH2Links(review.body);
   const average = scoreAverage(review);
   const image = review.imageUrl || editorialPhotos[review.photo];
+  const onThisPage = headings.length
+    ? headings
+    : [
+        { title: "First impression", href: "#first-impression" },
+        { title: "Worth it?", href: "#worth-it" },
+      ];
 
   return (
     <main className="page">
-      <section className="border-b border-[var(--ink)]">
-        <div className="container py-16 lg:py-24">
-          <Link href="/stays" className="mono mb-12 inline-flex items-center gap-2 text-[var(--ink-3)]">
-            <ArrowLeft size={13} strokeWidth={1.6} />
-            Back to stays
-          </Link>
+      <section className="border-b border-[var(--rule)]">
+        <div className="container pt-8">
+          <div className="mono mb-12 text-[var(--ink-3)]">
+            <Link href="/">Home</Link>
+            <span className="mx-2">/</span>
+            <Link href="/stays">Stays</Link>
+            {review.location ? (
+              <>
+                <span className="mx-2">/</span>
+                <span>{review.location}</span>
+              </>
+            ) : null}
+          </div>
 
-          <div className="stay-review-hero grid items-center">
-            <div className="relative aspect-[4/5] overflow-hidden">
-              <EditorialPhoto src={image} alt={review.title} label={review.photoLabel} priority />
-              <div className="absolute left-4 top-4 flex gap-1.5">
-                <span className="tag solid">Stay</span>
-                {review.location ? (
-                  <span className="tag border-transparent bg-[rgba(245,242,236,0.92)]">
-                    {review.location}
-                  </span>
-                ) : null}
-              </div>
+          <div className="mx-auto max-w-[1080px] pb-16 text-center lg:pb-20">
+            <div className="mono mb-7 text-[var(--accent-deep)]">
+              * Stay
+              {review.location ? ` - ${review.location}` : ""}
+              {review.date ? ` - ${review.date}` : ""}
             </div>
-
-            <div>
-              <div className="mono mb-5 text-[var(--accent-deep)]">
-                {average != null ? `${average.toFixed(1)} / 5` : "Stay review"}
-                {review.readTime ? ` - ${review.readTime} read` : ""}
-              </div>
-              <h1 className="serif m-0 text-[clamp(48px,7vw,104px)] font-normal leading-[0.92] tracking-[-0.045em]">
-                {review.title}
-              </h1>
-              <p className="serif mt-8 max-w-[720px] text-[clamp(22px,2.4vw,31px)] leading-[1.3] text-[var(--ink-2)]">
-                {review.verdict || review.dek}
-              </p>
-              <div className="mono mt-8 text-[var(--ink-3)]">
-                {review.date || "Draft"} {review.location ? ` · ${review.location}` : ""}
-              </div>
-              {review.websiteUrl ? (
-                <a href={review.websiteUrl} target="_blank" rel="noreferrer" className="btn solid mt-8">
-                  Visit website
-                  <ExternalLink size={14} />
-                </a>
+            <h1 className="serif m-0 text-[clamp(56px,8.5vw,118px)] font-normal leading-[0.9] tracking-[-0.05em]">
+              {review.title}
+            </h1>
+            <p className="serif mx-auto mt-8 max-w-[760px] text-[clamp(22px,2.3vw,30px)] italic leading-[1.35] text-[var(--ink-2)]">
+              {review.dek}
+            </p>
+            <div className="mono mt-9 flex flex-wrap items-center justify-center gap-4 text-[var(--ink-3)]">
+              {review.date ? <span>{review.date}</span> : null}
+              {review.readTime ? <span>{review.readTime} read</span> : null}
+              {average != null ? (
+                <span className="inline-flex items-center gap-1.5 text-[var(--accent-deep)]">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <Star
+                      key={index}
+                      size={12}
+                      fill={index < Math.round(average) ? "currentColor" : "none"}
+                      strokeWidth={1.5}
+                    />
+                  ))}
+                  <span className="ml-1 text-[var(--ink-2)]">{average.toFixed(1)}</span>
+                </span>
               ) : null}
             </div>
           </div>
+
+          <figure className="m-0">
+            <div className="relative aspect-[16/8] overflow-hidden bg-[var(--paper-2)]">
+              <EditorialPhoto src={image} alt={review.title} label={review.photoLabel} priority />
+            </div>
+            <figcaption className="mono border-b border-[var(--rule)] py-3 text-center text-[var(--ink-3)]">
+              {review.heroCaption || review.photoLabel}
+            </figcaption>
+          </figure>
         </div>
       </section>
 
       <section className="border-b border-[var(--rule)]">
-        <div className="container grid gap-16 py-24 lg:grid-cols-[minmax(0,1.55fr)_340px] lg:py-32">
-          <article className="max-w-none">
-            <section className="mb-16 border-y border-[var(--rule)] py-8">
-              <div className="mb-6 flex items-baseline justify-between gap-6">
-                <div>
-                  <div className="mono mb-2 text-[var(--ink-3)]">Jo Score</div>
-                  <h2 className="serif m-0 text-[clamp(34px,4vw,56px)] font-normal leading-none">
-                    {average != null ? `${average.toFixed(1)} / 5` : "Unscored"}
-                  </h2>
-                </div>
-                <div className="mono text-[var(--ink-3)]">point system out of 5</div>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                {stayScoreCriteria.map((item) => {
-                  const value = review.stayScores?.[item.key];
-                  return (
-                    <div key={item.key} className="border-t border-[var(--rule)] pt-4">
-                      <div className="flex items-baseline justify-between gap-4">
-                        <h3 className="serif m-0 text-[24px] font-normal leading-[1.1]">{item.label}</h3>
-                        <span className="mono whitespace-nowrap">
-                          {typeof value === "number" ? value.toFixed(1) : "-"} / 5
-                        </span>
-                      </div>
-                      <p className="m-0 mt-2 text-sm leading-[1.45] text-[var(--ink-3)]">{item.subtitle}</p>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
+        <div className="container grid gap-14 py-20 lg:grid-cols-[260px_minmax(0,1fr)_280px] lg:py-28">
+          <aside className="order-2 lg:order-1">
+            <div className="sticky top-36">
+              <UsefulInfo review={review} />
+            </div>
+          </aside>
 
-            {review.body?.length ? (
-              <RichText value={review.body} />
-            ) : (
-              <>
-                <h2 id="first-impression" className="serif m-0 mb-5 text-[42px] font-normal">
-                  First impression
-                </h2>
-                <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">
-                  This is starter copy for the stay review format. Add H2 headings in Sanity and
-                  they will automatically appear in the “On this page” navigation.
-                </p>
-                <h2 id="worth-it" className="serif mt-14 mb-5 text-[42px] font-normal">
-                  Worth it?
-                </h2>
-                <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">
-                  The review should answer the infrequent traveller question directly: was this
-                  stay worth using precious days off?
-                </p>
-              </>
-            )}
+          <article className="order-1 max-w-none lg:order-2">
+            {review.body?.length ? <RichText value={review.body} /> : <FallbackBody />}
           </article>
 
-          <aside className="lg:border-l lg:border-[var(--rule)] lg:pl-8">
-            <div className="sticky top-36 space-y-8">
-              <div>
-                <div className="mono mb-4 text-[var(--ink-3)]">On this page</div>
-                {(headings.length ? headings : [{ title: "First impression", href: "#first-impression" }, { title: "Worth it?", href: "#worth-it" }]).map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    className="block border-t border-[var(--rule)] py-3 text-sm text-[var(--ink-2)] transition-colors hover:text-[var(--ink)]"
-                  >
-                    {item.title}
-                  </a>
-                ))}
-              </div>
-
-              <div className="border-t border-[var(--rule)] pt-6">
-                <div className="mono mb-4 text-[var(--ink-3)]">Quick verdict</div>
-                <p className="serif m-0 text-[26px] leading-[1.15]">{review.verdict || review.dek}</p>
-              </div>
-
-              <div className="grid gap-5 border-t border-[var(--rule)] pt-6">
-                {review.bestFor?.length ? (
-                  <div>
-                    <div className="mono mb-2 text-[var(--ink-3)]">Best for</div>
-                    <p className="m-0 text-sm leading-[1.6] text-[var(--ink-2)]">{review.bestFor.join(", ")}</p>
-                  </div>
-                ) : null}
-                {review.avoid ? (
-                  <div>
-                    <div className="mono mb-2 text-[var(--ink-3)]">Avoid if</div>
-                    <p className="m-0 text-sm leading-[1.6] text-[var(--ink-2)]">{review.avoid}</p>
-                  </div>
-                ) : null}
-                {review.websiteUrl ? (
-                  <a href={review.websiteUrl} target="_blank" rel="noreferrer" className="btn w-fit">
-                    Website
-                    <ExternalLink size={14} />
-                  </a>
-                ) : null}
-              </div>
+          <aside className="order-3 lg:border-l lg:border-[var(--rule)] lg:pl-8">
+            <div className="sticky top-36">
+              <div className="mono mb-4 text-[var(--ink-3)]">On this page</div>
+              {onThisPage.map((item, index) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="grid grid-cols-[28px_1fr] gap-2 border-t border-[var(--rule)] py-3 text-sm text-[var(--ink-2)] transition-colors hover:text-[var(--ink)]"
+                >
+                  <span className="mono text-[var(--ink-4)]">{String(index + 1).padStart(2, "0")}</span>
+                  <span>{item.title}</span>
+                </a>
+              ))}
             </div>
           </aside>
         </div>
       </section>
 
-      <section>
-        <div className="container py-24 lg:py-32">
-          <SectionHead kicker="Keep reading" title="More stays." action="View stays" href="/stays" />
-          <div className="grid gap-12 lg:grid-cols-3">
-            {related.length > 0 ? (
-              related.map((item) => <ReviewCard key={item.id} review={item} />)
-            ) : (
-              <Link href="/" className="btn solid w-fit">
-                Back home
-                <ArrowRight size={14} />
-              </Link>
-            )}
+      <StayReviewBottom review={review} average={average} />
+      <RelatedSection related={related} category="stays" />
+    </main>
+  );
+}
+
+function UsefulInfo({ review }: { review: SanityEditorialEntry }) {
+  return (
+    <div className="border-y border-dashed border-[var(--rule)] py-6">
+      <InfoLine label="Price" value={review.price} />
+      <InfoLine label="Good for" value={review.goodFor || review.bestFor?.join(", ")} />
+      <InfoLine label="Best time" value={review.bestTime} />
+      <InfoLine label="Avoid" value={review.avoid} />
+      {review.websiteUrl ? (
+        <a href={review.websiteUrl} target="_blank" rel="noreferrer" className="btn mt-5 w-full justify-between">
+          Hotel website
+          <ExternalLink size={14} />
+        </a>
+      ) : null}
+    </div>
+  );
+}
+
+function InfoLine({ label, value }: { label: string; value?: string }) {
+  if (!value) {
+    return null;
+  }
+
+  return (
+    <div className="mb-7 last:mb-0">
+      <div className="mono mb-2 text-[var(--ink-3)]">{label}</div>
+      <p className="m-0 text-sm leading-[1.55] text-[var(--ink-2)]">{value}</p>
+    </div>
+  );
+}
+
+function StayReviewBottom({
+  review,
+  average,
+}: {
+  review: SanityEditorialEntry;
+  average: number | null;
+}) {
+  const loved = review.loved?.length ? review.loved : [];
+  const lessSo = review.lessSo?.length ? review.lessSo : [];
+
+  return (
+    <section className="border-b border-[var(--rule)]">
+      <div className="container py-20 lg:py-28">
+        {(loved.length || lessSo.length) ? (
+          <div className="grid border border-[var(--rule)] lg:grid-cols-2">
+            <ListPanel title="+ Loved" items={loved} tone="positive" />
+            <ListPanel title="- Less so" items={lessSo} />
+          </div>
+        ) : null}
+
+        <div className="mt-14 border border-[var(--rule)] p-8 lg:p-10">
+          <div className="mb-9 flex items-center justify-between gap-6">
+            <div className="mono text-[var(--ink-3)]">- By the numbers</div>
+            <div className="mono">Overall {average != null ? average.toFixed(1) : "-"}</div>
+          </div>
+          <div className="grid gap-x-12 gap-y-7 lg:grid-cols-2">
+            {stayScoreCriteria.map((item) => {
+              const value = review.stayScores?.[item.key];
+              return <ScoreBar key={item.key} label={item.label} value={value} />;
+            })}
           </div>
         </div>
-      </section>
-    </main>
+
+        {review.disclosure ? (
+          <div className="mt-20 border-t border-[var(--rule)] pt-10">
+            <div className="mono mb-6 text-[var(--ink-3)]">- Disclosure</div>
+            <p className="m-0 max-w-[1100px] text-lg leading-[1.75] text-[var(--ink-2)]">
+              {review.disclosure}
+            </p>
+          </div>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+function ListPanel({
+  title,
+  items,
+  tone,
+}: {
+  title: string;
+  items: string[];
+  tone?: "positive";
+}) {
+  return (
+    <div className="border-b border-[var(--rule)] p-8 lg:border-b-0 lg:border-r lg:p-10 last:border-r-0">
+      <div className="mono mb-7 text-[var(--ink-3)]">{title}</div>
+      <div className="space-y-0">
+        {items.length ? (
+          items.map((item) => (
+            <div
+              key={item}
+              className="grid grid-cols-[24px_1fr] gap-4 border-b border-dashed border-[var(--rule)] py-4 text-xl leading-[1.45] text-[var(--ink-2)] last:border-b-0"
+            >
+              <span className={tone === "positive" ? "text-[var(--accent-deep)]" : "text-[var(--ink-3)]"}>
+                {tone === "positive" ? "+" : "-"}
+              </span>
+              <span>{item}</span>
+            </div>
+          ))
+        ) : (
+          <p className="m-0 text-sm text-[var(--ink-3)]">Add notes in Sanity.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ScoreBar({ label, value }: { label: string; value?: number }) {
+  const width = typeof value === "number" ? Math.max(0, Math.min(100, (value / 5) * 100)) : 0;
+
+  return (
+    <div className="grid items-center gap-4 sm:grid-cols-[150px_1fr_42px]">
+      <div className="mono text-[var(--ink-2)]">{label}</div>
+      <div className="h-2 bg-[var(--rule-soft)]">
+        <div className="h-full bg-[var(--ink)]" style={{ width: `${width}%` }} />
+      </div>
+      <div className="mono text-right">{typeof value === "number" ? value.toFixed(1) : "-"}</div>
+    </div>
+  );
+}
+
+function MetaItem({ label, value }: { label: string; value?: string }) {
+  return (
+    <div className="border-t border-[var(--rule)] py-4">
+      <div className="mono mb-1 text-[var(--ink-4)]">{label}</div>
+      <div className="text-sm text-[var(--ink-2)]">{value || "-"}</div>
+    </div>
+  );
+}
+
+function FallbackBody() {
+  return (
+    <>
+      <h2 id="first-impression" className="serif m-0 mb-5 text-[42px] font-normal">
+        First impression
+      </h2>
+      <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">
+        This is starter copy for the stay review format. Add H2 headings in Sanity and they will
+        automatically appear in the On this page navigation.
+      </p>
+      <h2 id="worth-it" className="serif mt-14 mb-5 text-[42px] font-normal">
+        Worth it?
+      </h2>
+      <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">
+        The review should answer the infrequent traveller question directly: was this stay worth
+        using precious days off?
+      </p>
+    </>
+  );
+}
+
+function RelatedSection({
+  related,
+  category,
+}: {
+  related: ReturnType<typeof reviewsForCategory>;
+  category: SanityEditorialEntry["category"];
+}) {
+  return (
+    <section>
+      <div className="container py-24 lg:py-32">
+        <SectionHead
+          kicker="Keep reading"
+          title={`More ${category === "tips" ? "tips" : category}.`}
+          action="View section"
+          href={`/${category}`}
+        />
+        <div className="grid gap-12 lg:grid-cols-3">
+          {related.length > 0 ? (
+            related.map((item) => <ReviewCard key={item.id} review={item} />)
+          ) : (
+            <Link href="/" className="btn solid w-fit">
+              Back home
+              <ArrowRight size={14} />
+            </Link>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }
