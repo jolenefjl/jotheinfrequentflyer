@@ -42,6 +42,17 @@ export type NewsletterSettings = {
   emailPlaceholderText?: string;
 };
 
+export type SanityPlace = {
+  id: string;
+  slug: string;
+  name: string;
+  country: string;
+  entriesCount: number;
+  joTake?: string;
+  lat?: number;
+  lng?: number;
+};
+
 const categoryByType: Record<string, EditorialCategory> = {
   blogPost: "tips",
   stayReview: "stays",
@@ -209,4 +220,53 @@ export async function getNewsletterSettings(): Promise<NewsletterSettings> {
     emailPlaceholderText: "your@email.com",
     ...data,
   };
+}
+
+export async function getPlaces(options?: { fallback?: boolean }): Promise<SanityPlace[]> {
+  const data = await sanityQuery<Record<string, unknown>[]>(`
+    *[_type == "destination"] | order(name asc) {
+      _id,
+      name,
+      country,
+      "slug": slug.current,
+      entriesCount,
+      joTake,
+      "lat": coordinates.lat,
+      "lng": coordinates.lng
+    }
+  `);
+
+  const places =
+    data
+      ?.map((place) => ({
+        id: String(place._id || place.slug),
+        slug: String(place.slug || ""),
+        name: String(place.name || ""),
+        country: String(place.country || ""),
+        entriesCount: Number(place.entriesCount || 0),
+        joTake: typeof place.joTake === "string" ? place.joTake : undefined,
+        lat: typeof place.lat === "number" ? place.lat : undefined,
+        lng: typeof place.lng === "number" ? place.lng : undefined,
+      }))
+      .filter((place) => place.slug && place.name) || [];
+
+  if (places.length || options?.fallback === false) {
+    return places;
+  }
+
+  return [
+    { id: "mexico-city", slug: "mexico-city", name: "Mexico City", country: "Mexico", entriesCount: 7, joTake: "Counters, courtyards, and hotel mornings.", lat: 19.4326, lng: -99.1332 },
+    { id: "tokyo", slug: "tokyo", name: "Tokyo", country: "Japan", entriesCount: 11, joTake: "Tiny meals, big systems, excellent convenience.", lat: 35.6762, lng: 139.6503 },
+    { id: "lisbon", slug: "lisbon", name: "Lisbon", country: "Portugal", entriesCount: 5, joTake: "Hills, pastries, and a few things to skip.", lat: 38.7223, lng: -9.1393 },
+    { id: "perhentian-islands", slug: "perhentian-islands", name: "Perhentian Islands", country: "Malaysia", entriesCount: 3, joTake: "Clear water, boat logistics, rare proper switching off.", lat: 5.9096, lng: 102.7376 },
+    { id: "mendoza", slug: "mendoza", name: "Mendoza", country: "Argentina", entriesCount: 4, joTake: "Wine-country pacing and long lunches.", lat: -32.8895, lng: -68.8458 },
+    { id: "kyoto", slug: "kyoto", name: "Kyoto", country: "Japan", entriesCount: 6, joTake: "Gardens, shoulder season, and one expensive lesson.", lat: 35.0116, lng: 135.7681 },
+    { id: "imlil", slug: "imlil", name: "Imlil", country: "Morocco", entriesCount: 2, joTake: "Mountain air, tea, and slow paths.", lat: 31.1358, lng: -7.9194 },
+    { id: "ibiza", slug: "ibiza", name: "Ibiza", country: "Spain", entriesCount: 3, joTake: "Quieter corners beyond the obvious noise.", lat: 38.9067, lng: 1.4206 },
+  ];
+}
+
+export async function getPlaceBySlug(slug: string): Promise<SanityPlace | undefined> {
+  const places = await getPlaces();
+  return places.find((place) => place.slug === slug);
 }

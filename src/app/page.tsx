@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
-import { getEditorialEntries, getNewsletterSettings } from "@/lib/sanity-content";
+import { getEditorialEntries, getNewsletterSettings, getPlaces } from "@/lib/sanity-content";
 
 export const revalidate = 60;
 
@@ -180,7 +180,7 @@ const categories = [
   },
 ];
 
-const destinations = [
+const fallbackDestinations = [
   { name: "Mexico City", country: "Mexico", count: 7 },
   { name: "Tokyo", country: "Japan", count: 11 },
   { name: "Lisbon", country: "Portugal", count: 5 },
@@ -191,23 +191,25 @@ const destinations = [
   { name: "Ibiza", country: "Spain", count: 3 },
 ];
 
-const pins = [
-  { x: 200, y: 290, label: "Mexico City" },
-  { x: 640, y: 250, label: "Tokyo" },
-  { x: 350, y: 220, label: "Lisbon" },
-  { x: 660, y: 330, label: "Perhentians" },
-  { x: 245, y: 410, label: "Mendoza" },
-  { x: 660, y: 245, label: "Kyoto" },
-  { x: 365, y: 270, label: "Imlil" },
-  { x: 380, y: 215, label: "Ibiza" },
-];
+function projectPin(place: { lat?: number; lng?: number; name: string }) {
+  const lat = place.lat ?? 0;
+  const lng = place.lng ?? 0;
+  return {
+    x: Math.max(40, Math.min(760, ((lng + 180) / 360) * 800)),
+    y: Math.max(40, Math.min(510, ((90 - lat) / 180) * 550)),
+    label: place.name,
+  };
+}
 
 export default async function Home() {
-  const [sanityReviews, newsletter] = await Promise.all([
+  const [sanityReviews, newsletter, sanityDestinations] = await Promise.all([
     getEditorialEntries({ fallback: false }),
     getNewsletterSettings(),
+    getPlaces({ fallback: false }),
   ]);
   const activeReviews = (sanityReviews.length ? sanityReviews : reviews) as Review[];
+  const activeDestinations = sanityDestinations.length ? sanityDestinations : fallbackDestinations;
+  const pins = activeDestinations.map(projectPin);
   const featured = activeReviews.find((review) => review.featured) || activeReviews[0];
   const latest = activeReviews.filter((review) => !review.featured).slice(0, 6);
 
@@ -246,7 +248,7 @@ export default async function Home() {
               <span className="mono text-[rgba(245,242,236,0.7)]">Currently</span>
               <span className="serif text-[22px] italic tracking-[-0.005em]">Lisbon →</span>
               <span className="mono mt-1.5 text-[rgba(245,242,236,0.55)]">
-                {activeReviews.length} entries · {destinations.length} places
+                {activeReviews.length} entries · {activeDestinations.length} places
               </span>
             </div>
           </div>
@@ -403,10 +405,10 @@ export default async function Home() {
               <div className="mono absolute bottom-4 right-4">— drawn from memory, mostly accurate</div>
             </div>
             <div>
-              {destinations.map((destination, index) => (
+              {activeDestinations.map((destination, index) => (
                 <Link
                   key={destination.name}
-                  href="/places"
+                  href={`/places/${"slug" in destination ? destination.slug : ""}`}
                   className="grid grid-cols-[44px_1fr_auto_auto] items-center gap-4 border-t border-[var(--rule)] py-3.5 transition-[padding] hover:pl-2"
                 >
                   <span className="mono text-[var(--ink-3)]">0{index + 1}</span>
@@ -416,7 +418,9 @@ export default async function Home() {
                     </div>
                     <div className="mono mt-1 text-[var(--ink-3)]">{destination.country}</div>
                   </div>
-                  <span className="mono text-[var(--ink-3)]">{destination.count} entries</span>
+                  <span className="mono text-[var(--ink-3)]">
+                    {"entriesCount" in destination ? destination.entriesCount : destination.count} entries
+                  </span>
                   <ArrowRight size={13} strokeWidth={1.6} />
                 </Link>
               ))}

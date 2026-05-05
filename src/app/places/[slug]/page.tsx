@@ -2,20 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { ReviewCard, SectionHead } from "@/components/editorial-atoms";
-import { editorialReviews } from "@/lib/editorial-data";
+import { getEditorialEntries, getPlaceBySlug, getPlaces } from "@/lib/sanity-content";
 
-const places = [
-  { slug: "mexico-city", name: "Mexico City", country: "Mexico", intro: "Food, stays, and city notes from CDMX." },
-  { slug: "tokyo", name: "Tokyo", country: "Japan", intro: "Tokyo notes for eating well and moving calmly." },
-  { slug: "lisbon", name: "Lisbon", country: "Portugal", intro: "A first-timer file for hills, trams, and bakery detours." },
-  { slug: "perhentian-islands", name: "Perhentian Islands", country: "Malaysia", intro: "Island stays, boat transfers, and sea-heavy days." },
-  { slug: "mendoza", name: "Mendoza", country: "Argentina", intro: "Wine-country pacing, views, and long lunches." },
-  { slug: "kyoto", name: "Kyoto", country: "Japan", intro: "Shoulder-season notes for gardens, stays, and quiet splurges." },
-  { slug: "imlil", name: "Imlil", country: "Morocco", intro: "Mountain notes from the Atlas foothills." },
-  { slug: "ibiza", name: "Ibiza", country: "Spain", intro: "The calmer side of Ibiza, filed slowly." },
-];
+export const revalidate = 60;
+export const dynamicParams = true;
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const places = await getPlaces();
   return places.map((place) => ({ slug: place.slug }));
 }
 
@@ -25,14 +18,18 @@ export default async function PlacePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const place = places.find((item) => item.slug === slug);
+  const place = await getPlaceBySlug(slug);
 
   if (!place) {
     notFound();
   }
 
-  const matching = editorialReviews
-    .filter((review) => review.location.toLowerCase().includes(place.country.toLowerCase()) || review.location.toLowerCase().includes(place.name.toLowerCase()))
+  const entries = await getEditorialEntries();
+  const matching = entries
+    .filter((review) => {
+      const location = review.location.toLowerCase();
+      return location.includes(place.country.toLowerCase()) || location.includes(place.name.toLowerCase());
+    })
     .slice(0, 3);
 
   return (
@@ -47,7 +44,9 @@ export default async function PlacePage({
           <h1 className="serif m-0 mt-8 text-[clamp(70px,12vw,176px)] font-normal italic leading-[0.88] tracking-[-0.05em]">
             {place.name}.
           </h1>
-          <p className="mt-8 max-w-[620px] text-lg leading-[1.6] text-[var(--ink-2)]">{place.intro}</p>
+          <p className="mt-8 max-w-[620px] text-lg leading-[1.6] text-[var(--ink-2)]">
+            {place.joTake || `Starter notes from ${place.name}, ready to edit in Sanity.`}
+          </p>
         </div>
       </section>
 
@@ -63,8 +62,8 @@ export default async function PlacePage({
           ) : (
             <div className="border-t border-[var(--rule)] pt-8">
               <p className="max-w-[560px] text-[var(--ink-2)]">
-                This place is in the map, but the full notes are still being written into the new
-                system.
+                This place is in Sanity now. Add or tag more entries for this location and they will
+                appear here.
               </p>
               <Link href="/stays" className="btn mt-6 w-fit">
                 Browse latest notes
