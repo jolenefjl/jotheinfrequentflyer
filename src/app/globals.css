@@ -383,7 +383,7 @@ img {
   font-family: var(--f-serif);
   font-size: clamp(39px, 6.3vw, 101px);
   font-style: italic;
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: -0.02em;
   line-height: 0.98;
   margin: 0 0 22px;
@@ -399,8 +399,8 @@ img {
 }
 
 .cover-story-grid {
-  grid-template-columns: minmax(0, 0.95fr) minmax(420px, 0.85fr);
-  gap: clamp(64px, 7vw, 112px);
+  grid-template-columns: minmax(0, 0.9fr) minmax(420px, 0.8fr);
+  gap: clamp(96px, 10vw, 160px);
 }
 
 .stay-review-hero {

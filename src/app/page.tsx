@@ -283,7 +283,7 @@ export default async function Home() {
             {homePage?.hero?.headline || "The Infrequent Flyer."}
           </h1>
           <div className="manifesto-grid">
-            <p className="serif m-0 max-w-[640px] text-[clamp(15px,1.82vw,22px)] font-light leading-[1.45] text-[var(--paper)]">
+            <p className="serif m-0 max-w-[640px] text-[clamp(15px,1.82vw,22px)] font-normal leading-[1.45] text-[var(--paper)]">
               {homePage?.hero?.intro ||
                 "Because I don't get to travel often enough, every single trip is precious. These are my notes on the places I've slept, the meals I've remembered, and the days that turned out to matter."}
             </p>

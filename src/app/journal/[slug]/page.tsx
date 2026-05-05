@@ -290,7 +290,7 @@ function StayReviewJournalPage({
               {country ? ` - ${country}` : ""}
               {monthYear ? ` - ${monthYear}` : ""}
             </div>
-            <h1 className="serif mx-auto m-0 max-w-[980px] text-[48px] font-light leading-[1.04] tracking-[-0.01em]">
+            <h1 className="serif mx-auto m-0 max-w-[980px] text-[48px] font-normal leading-[1.04] tracking-[-0.01em]">
               {review.title}
             </h1>
             <p className="serif mx-auto mt-7 max-w-[720px] text-[22px] italic leading-[1.4] text-[var(--ink-2)]">
@@ -462,7 +462,7 @@ function ListPanel({
           items.map((item) => (
             <div
               key={item}
-              className="grid grid-cols-[24px_1fr] gap-4 border-b border-dashed border-[var(--rule)] py-4 text-xl leading-[1.45] text-[var(--ink-2)] last:border-b-0"
+              className="grid grid-cols-[18px_1fr] gap-3 border-b border-dashed border-[var(--rule)] py-3 text-sm leading-[1.55] text-[var(--ink-2)] last:border-b-0"
             >
               <span className={tone === "positive" ? "text-[var(--accent-deep)]" : "text-[var(--ink-3)]"}>
                 {tone === "positive" ? "+" : "-"}
