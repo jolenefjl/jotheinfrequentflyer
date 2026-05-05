@@ -298,16 +298,7 @@ function StayReviewJournalPage({
             </p>
             <div className="mono mt-9 flex flex-wrap items-center justify-center gap-4 text-[var(--ink-3)]">
               {average != null ? (
-                <span className="inline-flex items-center gap-1.5 text-[var(--accent-deep)]">
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <Star
-                      key={index}
-                      size={12}
-                      fill={index < Math.round(average) ? "currentColor" : "none"}
-                      strokeWidth={1.5}
-                    />
-                  ))}
-                </span>
+                <RatingStars rating={average} />
               ) : null}
             </div>
           </div>
@@ -323,7 +314,7 @@ function StayReviewJournalPage({
         </div>
       </section>
 
-      <section className="border-b border-[var(--rule)]">
+      <section>
         <div className="container grid gap-14 py-20 lg:grid-cols-[260px_minmax(0,1fr)_280px] lg:py-28">
           <aside className="order-2 lg:order-1">
             <div className="sticky top-36">
@@ -333,6 +324,7 @@ function StayReviewJournalPage({
 
           <article className="order-1 max-w-none lg:order-2">
             {review.body?.length ? <RichText value={review.body} /> : <FallbackBody />}
+            <StayReviewBottom review={review} average={average} />
           </article>
 
           <aside className="order-3 lg:border-l lg:border-[var(--rule)] lg:pl-8">
@@ -353,15 +345,32 @@ function StayReviewJournalPage({
         </div>
       </section>
 
-      <StayReviewBottom review={review} average={average} />
       <RelatedSection related={related} category="stays" />
     </main>
   );
 }
 
+function RatingStars({ rating }: { rating: number }) {
+  return (
+    <span className="inline-flex items-center gap-3 text-[var(--accent-deep)]">
+      <span className="inline-flex items-center gap-1.5">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <Star
+            key={index}
+            size={13}
+            fill={index < Math.round(rating) ? "currentColor" : "none"}
+            strokeWidth={1.5}
+          />
+        ))}
+      </span>
+      <span>{rating.toFixed(1)} / 5</span>
+    </span>
+  );
+}
+
 function UsefulInfo({ review }: { review: SanityEditorialEntry }) {
   return (
-    <div className="border-y border-dashed border-[var(--rule)] py-6">
+    <div className="border-b border-dashed border-[var(--rule)] pb-6">
       <InfoLine label="Price" value={review.price || "Add price in Sanity"} />
       <InfoLine label="Good for" value={review.goodFor || review.bestFor?.join(", ") || "Add good-for note in Sanity"} />
       <InfoLine label="Best time" value={review.bestTime || "Add best time in Sanity"} />
@@ -405,36 +414,34 @@ function StayReviewBottom({
   const lessSo = review.lessSo?.length ? review.lessSo : ["Add less-so notes in Sanity"];
 
   return (
-    <section className="border-b border-[var(--rule)]">
-      <div className="container py-20 lg:py-28">
-        <div className="grid border border-[var(--rule)] lg:grid-cols-2">
-          <ListPanel title="+ Loved" items={loved} tone="positive" />
-          <ListPanel title="- Less so" items={lessSo} />
-        </div>
-
-        <div className="mt-14 border border-[var(--rule)] p-8 lg:p-10">
-          <div className="mb-9 flex items-center justify-between gap-6">
-            <div className="mono text-[var(--ink-3)]">- By the numbers</div>
-            <div className="mono">Overall {average != null ? average.toFixed(1) : "-"}</div>
-          </div>
-          <div className="grid gap-x-12 gap-y-7 lg:grid-cols-2">
-            {stayScoreCriteria.map((item) => {
-              const value = review.stayScores?.[item.key];
-              return <ScoreBar key={item.key} label={item.label} value={value} />;
-            })}
-          </div>
-        </div>
-
-        {review.disclosure ? (
-          <div className="mt-20 border-t border-[var(--rule)] pt-10">
-            <div className="mono mb-6 text-[var(--ink-3)]">- Disclosure</div>
-            <p className="m-0 max-w-[1100px] text-lg leading-[1.75] text-[var(--ink-2)]">
-              {review.disclosure}
-            </p>
-          </div>
-        ) : null}
+    <div className="mt-16">
+      <div className="grid border border-[var(--rule)] lg:grid-cols-2">
+        <ListPanel title="+ Loved" items={loved} tone="positive" />
+        <ListPanel title="- Less so" items={lessSo} />
       </div>
-    </section>
+
+      <div className="mt-12 border border-[var(--rule)] p-7 lg:p-9">
+        <div className="mb-9 flex items-center justify-between gap-6">
+          <div className="mono text-[var(--ink-3)]">- By the numbers</div>
+          <div className="mono">Overall {average != null ? average.toFixed(1) : "-"}</div>
+        </div>
+        <div className="grid gap-7">
+          {stayScoreCriteria.map((item) => {
+            const value = review.stayScores?.[item.key];
+            return <ScoreBar key={item.key} label={item.label} subtitle={item.subtitle} value={value} />;
+          })}
+        </div>
+      </div>
+
+      {review.disclosure ? (
+        <div className="mt-14">
+          <div className="mono mb-5 text-[var(--ink-3)]">- Disclosure</div>
+          <p className="m-0 text-sm leading-[1.75] text-[var(--ink-3)]">
+            {review.disclosure}
+          </p>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -471,12 +478,23 @@ function ListPanel({
   );
 }
 
-function ScoreBar({ label, value }: { label: string; value?: number }) {
+function ScoreBar({
+  label,
+  subtitle,
+  value,
+}: {
+  label: string;
+  subtitle: string;
+  value?: number;
+}) {
   const width = typeof value === "number" ? Math.max(0, Math.min(100, (value / 5) * 100)) : 0;
 
   return (
-    <div className="grid items-center gap-4 sm:grid-cols-[150px_1fr_42px]">
-      <div className="mono text-[var(--ink-2)]">{label}</div>
+    <div className="grid items-center gap-4 sm:grid-cols-[230px_1fr_42px]">
+      <div>
+        <div className="mono text-[var(--ink-2)]">{label}</div>
+        <p className="m-0 mt-1 text-xs leading-[1.45] text-[var(--ink-3)]">{subtitle}</p>
+      </div>
       <div className="h-2 bg-[var(--rule-soft)]">
         <div className="h-full bg-[var(--ink)]" style={{ width: `${width}%` }} />
       </div>
