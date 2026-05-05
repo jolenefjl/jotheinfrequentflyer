@@ -57,7 +57,7 @@ export const homePage = defineType({
               ],
             },
           ],
-          validation: (Rule) => Rule.max(4),
+          validation: (Rule) => Rule.max(4).warning("The layout is designed for up to four stats."),
         }),
       ],
     }),

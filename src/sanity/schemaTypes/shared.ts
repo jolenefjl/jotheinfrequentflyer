@@ -10,9 +10,9 @@ export const imageWithMeta = defineType({
       title: "Image",
       type: "image",
       options: { hotspot: true },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().warning("Add an image before final publishing."),
     }),
-    defineField({ name: "alt", title: "Alt text", type: "string", validation: (Rule) => Rule.required() }),
+    defineField({ name: "alt", title: "Alt text", type: "string", validation: (Rule) => Rule.required().warning("Add alt text before final publishing.") }),
     defineField({ name: "caption", title: "Caption", type: "string" }),
     defineField({ name: "credit", title: "Image credit", type: "string" }),
   ],
@@ -40,14 +40,14 @@ export const imageLayout = defineType({
           { title: "Four photos 2x2 grid", value: "four" },
         ],
       },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().warning("Choose an image layout before final publishing."),
     }),
     defineField({
       name: "images",
       title: "Images",
       type: "array",
       of: [{ type: "imageWithMeta" }],
-      validation: (Rule) => Rule.required().min(1).max(4),
+      validation: (Rule) => Rule.required().min(1).max(4).warning("Add one to four images before final publishing."),
     }),
   ],
   preview: {
@@ -94,7 +94,7 @@ export const richText = defineType({
             title: "Link",
             type: "object",
             fields: [
-              defineField({ name: "href", title: "URL", type: "url", validation: (Rule) => Rule.required() }),
+              defineField({ name: "href", title: "URL", type: "url", validation: (Rule) => Rule.required().warning("Add a URL before final publishing.") }),
               defineField({ name: "blank", title: "Open in new tab", type: "boolean", initialValue: true }),
             ],
           },
@@ -128,14 +128,14 @@ export const slugField = defineField({
   title: "Slug",
   type: "slug",
   options: { source: "title", maxLength: 96 },
-  validation: (Rule) => Rule.required(),
+  validation: (Rule) => Rule.required().warning("Add a slug before final publishing."),
 });
 
 export const titleField = defineField({
   name: "title",
   title: "Title",
   type: "string",
-  validation: (Rule) => Rule.required(),
+  validation: (Rule) => Rule.required().warning("Add a title before final publishing."),
 });
 
 export const bodyField = defineField({

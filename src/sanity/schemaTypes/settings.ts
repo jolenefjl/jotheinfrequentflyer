@@ -6,7 +6,7 @@ export const siteSettings = defineType({
   type: "document",
   fields: [
     defineField({ name: "favicon", title: "Favicon", type: "image" }),
-    defineField({ name: "siteTitle", title: "Site title", type: "string", validation: (Rule) => Rule.required() }),
+    defineField({ name: "siteTitle", title: "Site title", type: "string", validation: (Rule) => Rule.required().warning("Add a site title before final publishing.") }),
     defineField({ name: "siteDescription", title: "Site description", type: "text", rows: 3 }),
     defineField({ name: "primaryColor", title: "Primary color", type: "string", description: "Hex, CSS color, or token value." }),
     defineField({ name: "secondaryColor", title: "Secondary color", type: "string", description: "Hex, CSS color, or token value." }),

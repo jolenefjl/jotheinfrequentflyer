@@ -5,14 +5,14 @@ export const destination = defineType({
   title: "Destination / Place",
   type: "document",
   fields: [
-    defineField({ name: "name", title: "Name", type: "string", validation: (Rule) => Rule.required() }),
-    defineField({ name: "country", title: "Country", type: "string", validation: (Rule) => Rule.required() }),
+    defineField({ name: "name", title: "Name", type: "string", validation: (Rule) => Rule.required().warning("Add a place name before final publishing.") }),
+    defineField({ name: "country", title: "Country", type: "string", validation: (Rule) => Rule.required().warning("Add a country before final publishing.") }),
     defineField({
       name: "slug",
       title: "Slug",
       type: "slug",
       options: { source: "name", maxLength: 96 },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().warning("Add a slug before final publishing."),
     }),
     defineField({ name: "entriesCount", title: "Entries count", type: "number", validation: (Rule) => Rule.min(0) }),
     defineField({

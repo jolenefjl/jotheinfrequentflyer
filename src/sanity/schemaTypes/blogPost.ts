@@ -33,7 +33,7 @@ export const blogPost = defineType({
           { title: "Top Tips", value: "tips" },
         ],
       },
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) => Rule.required().warning("Choose a category before final publishing."),
     }),
     coverImageField,
     readingTimeField,

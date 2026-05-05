@@ -6,8 +6,8 @@ export const topList = defineType({
   title: "Top List",
   type: "document",
   fields: [
-    defineField({ name: "title", title: "Title", type: "string", validation: (Rule) => Rule.required() }),
-    defineField({ name: "slug", title: "Slug", type: "slug", options: { source: "title", maxLength: 96 }, validation: (Rule) => Rule.required() }),
+    defineField({ name: "title", title: "Title", type: "string", validation: (Rule) => Rule.required().warning("Add a title before final publishing.") }),
+    defineField({ name: "slug", title: "Slug", type: "slug", options: { source: "title", maxLength: 96 }, validation: (Rule) => Rule.required().warning("Add a slug before final publishing.") }),
     defineField({ name: "destinations", title: "Related destinations", type: "array", of: [{ type: "reference", to: [{ type: "destination" }] }] }),
     defineField({ name: "heroImage", title: "Hero image", type: "image", options: { hotspot: true } }),
     defineField({ name: "pinterestImage", title: "Pinterest image", type: "image", options: { hotspot: true } }),
