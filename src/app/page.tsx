@@ -335,7 +335,7 @@ export default async function Home() {
                   {homePage?.coverStory?.ratingLine ||
                     `${featured.rating?.toFixed(1) || "Notes"} / 5 - ${featured.readTime} read`}
                 </div>
-                <h2 className="serif m-0 mb-[22px] text-[clamp(40px,5vw,68px)] font-normal leading-none tracking-[-0.02em]">
+                <h2 className="serif m-0 mb-[22px] text-[clamp(34px,4.25vw,58px)] font-normal leading-none tracking-[-0.02em]">
                   {featured.title}
                 </h2>
                 <p className="m-0 mb-7 max-w-[520px] text-lg leading-[1.55] text-[var(--ink-2)]">

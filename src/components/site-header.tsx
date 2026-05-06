@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Search } from "lucide-react";
+import { CurrentDate } from "@/components/current-date";
 import { hasVisibleCityGuides } from "@/lib/sanity-content";
 
 const navItems = [
@@ -21,7 +22,7 @@ export async function SiteHeader() {
           <div className="site-header__meta">
             <span className="mono">No 047</span>
             <span className="text-[var(--ink-4)]">·</span>
-            <span className="mono">Mon, May 4</span>
+            <CurrentDate />
           </div>
           <Link href="/" className="brandmark" aria-label="Infrequent Flyer home">
             <span className="brandmark__name">
