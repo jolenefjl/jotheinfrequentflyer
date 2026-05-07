@@ -51,7 +51,7 @@ const components: PortableTextComponents = {
     h4: ({ children }) => <h4 className={`${headingClass} mt-10 text-[28px] leading-[1.15]`}>{children}</h4>,
     h5: ({ children }) => <h5 className={`${headingClass} mt-9 text-[22px] leading-[1.2]`}>{children}</h5>,
     h6: ({ children }) => <h6 className="mono mt-8 text-[var(--ink-3)]">{children}</h6>,
-    normal: ({ children }) => <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">{children}</p>,
+    normal: ({ children }) => <p className="my-6 text-[16px] leading-[1.78] text-[var(--ink-2)]">{children}</p>,
     blockquote: ({ children }) => (
       <blockquote className="serif my-10 border-l border-[var(--ink)] pl-6 text-[30px] leading-[1.25] text-[var(--ink)]">
         {children}
@@ -59,8 +59,8 @@ const components: PortableTextComponents = {
     ),
   },
   list: {
-    bullet: ({ children }) => <ul className="my-7 list-disc space-y-3 pl-6 text-lg leading-[1.7] text-[var(--ink-2)]">{children}</ul>,
-    number: ({ children }) => <ol className="my-7 list-decimal space-y-3 pl-6 text-lg leading-[1.7] text-[var(--ink-2)]">{children}</ol>,
+    bullet: ({ children }) => <ul className="my-7 list-disc space-y-3 pl-6 text-[16px] leading-[1.7] text-[var(--ink-2)]">{children}</ul>,
+    number: ({ children }) => <ol className="my-7 list-decimal space-y-3 pl-6 text-[16px] leading-[1.7] text-[var(--ink-2)]">{children}</ol>,
   },
   marks: {
     link: ({ value, children }) => {
@@ -135,7 +135,7 @@ function ImageLayout({ value }: { value: ImageLayoutValue }) {
         })}
       </div>
       {(caption || credit) && (
-        <figcaption className="mono mt-2 text-[var(--ink-3)]">
+        <figcaption className="mono mt-2 text-center text-[var(--ink-3)]">
           {caption}
           {caption && credit ? " / " : ""}
           {credit}

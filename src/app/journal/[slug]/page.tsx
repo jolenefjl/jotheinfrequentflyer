@@ -8,6 +8,7 @@ import {
   SectionHead,
 } from "@/components/editorial-atoms";
 import { RichText, slugifyHeading } from "@/components/rich-text";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import {
   editorialPhotos,
   reviewsForCategory,
@@ -86,6 +87,7 @@ export default async function JournalPage({
 
   return (
     <main className="page">
+      <ScrollToTop watch={review.slug} />
       <section className="border-b border-[var(--ink)]">
         <div className="container py-20 lg:py-28">
           <Link
@@ -270,6 +272,7 @@ function StayReviewJournalPage({
 
   return (
     <main className="page">
+      <ScrollToTop watch={review.slug} />
       <section className="border-b border-[var(--rule)]">
         <div className="container pt-8">
           <div className="mono mb-12 text-[var(--ink-3)]">
@@ -518,14 +521,14 @@ function FallbackBody() {
       <h2 id="first-impression" className="serif m-0 mb-5 text-[42px] font-normal">
         First impression
       </h2>
-      <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">
+      <p className="my-6 text-[16px] leading-[1.78] text-[var(--ink-2)]">
         This is starter copy for the stay review format. Add H2 headings in Sanity and they will
         automatically appear in the On this page navigation.
       </p>
       <h2 id="worth-it" className="serif mt-14 mb-5 text-[42px] font-normal">
         Worth it?
       </h2>
-      <p className="my-6 text-lg leading-[1.85] text-[var(--ink-2)]">
+      <p className="my-6 text-[16px] leading-[1.78] text-[var(--ink-2)]">
         The review should answer the infrequent traveller question directly: was this stay worth
         using precious days off?
       </p>
