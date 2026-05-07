@@ -7,6 +7,9 @@ type ImageLayoutValue = {
   images?: {
     _key?: string;
     url?: string;
+    width?: number;
+    height?: number;
+    aspectRatio?: number;
     alt?: string;
     caption?: string;
     credit?: string;
@@ -98,10 +101,25 @@ function ImageLayout({ value }: { value: ImageLayoutValue }) {
 
   return (
     <div className={`my-12 grid gap-4 ${gridClass}`}>
-      {images.map((image, index) => (
+      {images.map((image, index) => {
+        const aspectRatio = image.aspectRatio || (image.width && image.height ? image.width / image.height : 4 / 3);
+        const frameClass =
+          aspectRatio < 0.85
+            ? "aspect-[3/4]"
+            : aspectRatio > 1.15
+              ? "aspect-[4/3]"
+              : "aspect-square";
+
+        return (
         <figure key={image._key || image.url || index} className="m-0">
-          <div className="relative aspect-[4/3] overflow-hidden bg-[var(--paper-2)]">
-            <Image src={image.url || ""} alt={image.alt || ""} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+          <div className={`relative overflow-hidden bg-[var(--paper-2)] ${frameClass}`}>
+            <Image
+              src={image.url || ""}
+              alt={image.alt || ""}
+              fill
+              sizes={layout === "single" ? "(max-width: 768px) 100vw, 760px" : "(max-width: 768px) 100vw, 50vw"}
+              className="object-cover"
+            />
           </div>
           {(image.caption || image.credit) && (
             <figcaption className="mono mt-2 text-[var(--ink-3)]">
@@ -111,7 +129,8 @@ function ImageLayout({ value }: { value: ImageLayoutValue }) {
             </figcaption>
           )}
         </figure>
-      ))}
+        );
+      })}
     </div>
   );
 }

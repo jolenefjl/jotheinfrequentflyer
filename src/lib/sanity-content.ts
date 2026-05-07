@@ -202,7 +202,10 @@ const entryProjection = `
       ...,
       images[]{
         ...,
-        "url": image.asset->url
+        "url": image.asset->url,
+        "width": image.asset->metadata.dimensions.width,
+        "height": image.asset->metadata.dimensions.height,
+        "aspectRatio": image.asset->metadata.dimensions.aspectRatio
       }
     }
   },
