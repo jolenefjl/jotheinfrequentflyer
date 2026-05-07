@@ -10,6 +10,14 @@ const entryTypes = [
   { type: "cityGuide" },
 ];
 
+const sectionVisibilityField = defineField({
+  name: "visible",
+  title: "Show this section",
+  type: "boolean",
+  initialValue: true,
+  description: "Turn this off to hide the section on the homepage without deleting its content.",
+});
+
 export const homePage = defineType({
   name: "homePage",
   title: "Home Page",
@@ -21,6 +29,7 @@ export const homePage = defineType({
       title: "Hero",
       type: "object",
       fields: [
+        sectionVisibilityField,
         defineField({ name: "image", title: "Hero image", type: "image", options: { hotspot: true } }),
         defineField({ name: "eyebrowLeft", title: "Left eyebrow", type: "string" }),
         defineField({ name: "eyebrowRight", title: "Right eyebrow", type: "string" }),
@@ -36,6 +45,7 @@ export const homePage = defineType({
       title: "Cover story",
       type: "object",
       fields: [
+        sectionVisibilityField,
         defineField({ name: "kicker", title: "Kicker", type: "string" }),
         defineField({ name: "issueLabel", title: "Issue label", type: "string" }),
         defineField({ name: "entry", title: "Entry", type: "reference", to: entryTypes }),
@@ -66,6 +76,7 @@ export const homePage = defineType({
       title: "Browse section",
       type: "object",
       fields: [
+        sectionVisibilityField,
         defineField({ name: "kicker", title: "Kicker", type: "string" }),
         defineField({ name: "title", title: "Title", type: "string" }),
         defineField({
@@ -92,6 +103,7 @@ export const homePage = defineType({
       title: "Recently filed section",
       type: "object",
       fields: [
+        sectionVisibilityField,
         defineField({ name: "kicker", title: "Kicker", type: "string" }),
         defineField({ name: "title", title: "Title", type: "string" }),
         defineField({ name: "actionText", title: "Action text", type: "string" }),
@@ -104,6 +116,7 @@ export const homePage = defineType({
       title: "By place section",
       type: "object",
       fields: [
+        sectionVisibilityField,
         defineField({ name: "kicker", title: "Kicker", type: "string" }),
         defineField({ name: "title", title: "Title", type: "string" }),
         defineField({ name: "mapLabelLeft", title: "Map label left", type: "string" }),
@@ -117,6 +130,7 @@ export const homePage = defineType({
       title: "Newsletter section",
       type: "object",
       fields: [
+        sectionVisibilityField,
         defineField({ name: "kicker", title: "Kicker", type: "string" }),
       ],
     }),

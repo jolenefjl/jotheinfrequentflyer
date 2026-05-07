@@ -235,6 +235,12 @@ export default async function Home() {
   const latest = ((homePage?.latestSection?.entries?.length
     ? homePage.latestSection.entries
     : activeReviews.filter((review) => review.slug !== featured.slug)) as Review[]).slice(0, 6);
+  const showHero = homePage?.hero?.visible !== false;
+  const showCoverStory = homePage?.coverStory?.visible !== false;
+  const showBrowse = homePage?.browseSection?.visible !== false;
+  const showLatest = homePage?.latestSection?.visible !== false;
+  const showPlaces = homePage?.placeSection?.visible !== false;
+  const showNewsletter = homePage?.newsletterSection?.visible !== false;
   const browseTiles =
     homePage?.browseSection?.tiles?.filter((tile) => tile.visible !== false) ||
     categories.map((category) => ({
@@ -247,7 +253,7 @@ export default async function Home() {
 
   return (
     <main className="page">
-      <section className="manifesto-hero">
+      <section className={`${showHero ? "" : "hidden "}manifesto-hero`}>
         <Photo
           src={homePage?.hero?.imageUrl || photos.ocean}
           alt="Tropical sea in Perhentian Besar"
@@ -297,7 +303,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-b border-[var(--rule)]">
+      <section className={`${showCoverStory ? "" : "hidden "}border-b border-[var(--rule)]`}>
         <div className="container py-24 lg:py-32">
           <div className="mb-10 flex items-baseline justify-between">
             <span className="mono text-[var(--ink-3)]">— The cover story</span>
@@ -342,7 +348,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-b border-[var(--rule)]">
+      <section className={`${showBrowse ? "" : "hidden "}border-b border-[var(--rule)]`}>
         <div className="container py-24 lg:py-32">
           <SectionHead
             kicker={homePage?.browseSection?.kicker || "Browse"}
@@ -369,7 +375,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-b border-[var(--rule)]">
+      <section className={`${showLatest ? "" : "hidden "}border-b border-[var(--rule)]`}>
         <div className="container py-24 lg:py-32">
           <SectionHead
             kicker={homePage?.latestSection?.kicker || "The latest"}
@@ -385,7 +391,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-b border-[var(--rule)]">
+      <section className={`${showPlaces ? "" : "hidden "}border-b border-[var(--rule)]`}>
         <div className="container py-24 lg:py-32">
           <SectionHead
             kicker={homePage?.placeSection?.kicker || "Field map"}
@@ -470,7 +476,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-b border-[var(--rule)] bg-[var(--paper-2)]">
+      <section className={`${showNewsletter ? "" : "hidden "}border-b border-[var(--rule)] bg-[var(--paper-2)]`}>
         <div className="container py-28 lg:py-36">
           <div className="mx-auto max-w-[880px] text-center">
             <div className="mono mb-6 text-[var(--ink-3)]">— Newsletter</div>

@@ -72,6 +72,7 @@ export type HomeTile = {
 
 export type HomePageContent = {
   hero?: {
+    visible?: boolean;
     imageUrl?: string;
     eyebrowLeft?: string;
     eyebrowRight?: string;
@@ -82,6 +83,7 @@ export type HomePageContent = {
     photoCredit?: string;
   };
   coverStory?: {
+    visible?: boolean;
     kicker?: string;
     issueLabel?: string;
     entry?: SanityEditorialEntry;
@@ -93,11 +95,13 @@ export type HomePageContent = {
     stats?: { label?: string; value?: string }[];
   };
   browseSection?: {
+    visible?: boolean;
     kicker?: string;
     title?: string;
     tiles?: HomeTile[];
   };
   latestSection?: {
+    visible?: boolean;
     kicker?: string;
     title?: string;
     actionText?: string;
@@ -105,6 +109,7 @@ export type HomePageContent = {
     entries?: SanityEditorialEntry[];
   };
   placeSection?: {
+    visible?: boolean;
     kicker?: string;
     title?: string;
     mapLabelLeft?: string;
@@ -113,6 +118,7 @@ export type HomePageContent = {
     places?: SanityPlace[];
   };
   newsletterSection?: {
+    visible?: boolean;
     kicker?: string;
   };
 };
@@ -412,6 +418,7 @@ export async function getHomePageContent(): Promise<HomePageContent | null> {
   const data = await sanityQuery<HomePageContent>(`
     *[_type == "homePage"][0]{
       hero{
+        visible,
         "imageUrl": image.asset->url,
         eyebrowLeft,
         eyebrowRight,
@@ -422,6 +429,7 @@ export async function getHomePageContent(): Promise<HomePageContent | null> {
         photoCredit
       },
       coverStory{
+        visible,
         kicker,
         issueLabel,
         entry->{${entryProjection}},
@@ -434,6 +442,7 @@ export async function getHomePageContent(): Promise<HomePageContent | null> {
       },
       browseSection,
       latestSection{
+        visible,
         kicker,
         title,
         actionText,
@@ -441,6 +450,7 @@ export async function getHomePageContent(): Promise<HomePageContent | null> {
         entries[]->{${entryProjection}}
       },
       placeSection{
+        visible,
         kicker,
         title,
         mapLabelLeft,
