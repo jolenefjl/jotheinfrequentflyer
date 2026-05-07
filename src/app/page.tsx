@@ -321,7 +321,7 @@ export default async function Home() {
                 </span>
               </div>
             </div>
-            <div className="flex flex-col justify-between pt-2">
+            <div className="flex flex-col justify-center py-8 lg:py-12">
               <div>
                 <h2 className="serif m-0 mb-[22px] text-[clamp(34px,4.25vw,58px)] font-normal leading-none tracking-[-0.02em]">
                   {featured.title}
