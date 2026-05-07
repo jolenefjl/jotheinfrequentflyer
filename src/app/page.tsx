@@ -244,14 +244,6 @@ export default async function Home() {
       blurb: category.blurb,
       visible: true,
     } satisfies HomeTile));
-  const coverStats = homePage?.coverStory?.stats?.length
-    ? homePage.coverStory.stats
-    : [
-        { label: "Nights stayed", value: "7" },
-        { label: "Verdict", value: "Send a friend" },
-        { label: "Best for", value: "Slow couples" },
-        { label: "Avoid in", value: "Nov - Feb" },
-      ];
 
   return (
     <main className="page">
@@ -331,10 +323,6 @@ export default async function Home() {
             </div>
             <div className="flex flex-col justify-between pt-2">
               <div>
-                <div className="mono mb-[18px] text-[var(--accent-deep)]">
-                  {homePage?.coverStory?.ratingLine ||
-                    `${featured.rating?.toFixed(1) || "Notes"} / 5 - ${featured.readTime} read`}
-                </div>
                 <h2 className="serif m-0 mb-[22px] text-[clamp(34px,4.25vw,58px)] font-normal leading-none tracking-[-0.02em]">
                   {featured.title}
                 </h2>
@@ -348,11 +336,6 @@ export default async function Home() {
                   {homePage?.coverStory?.buttonText || "Read the review"}
                   <ArrowRight size={14} strokeWidth={1.6} />
                 </Link>
-              </div>
-              <div className="mt-10 grid grid-cols-2 gap-[18px] border-t border-[var(--rule)] pt-6">
-                {coverStats.slice(0, 4).map((stat) => (
-                  <Stat key={stat.label} label={stat.label || ""} value={stat.value || ""} />
-                ))}
               </div>
             </div>
           </div>
@@ -544,15 +527,6 @@ function Photo({
           {label}
         </div>
       ) : null}
-    </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <div className="mono mb-1 text-[var(--ink-3)]">{label}</div>
-      <div className="serif text-lg tracking-[-0.005em]">{value}</div>
     </div>
   );
 }
