@@ -98,21 +98,31 @@ function ImageLayout({ value }: { value: ImageLayoutValue }) {
         : layout === "three"
           ? "grid-cols-1 md:grid-cols-3"
           : "grid-cols-2";
+  const gapClass = images.length > 1 ? "gap-1.5 md:gap-2" : "gap-4";
+  const caption = images
+    .map((image) => image.caption)
+    .filter(Boolean)
+    .join(" / ");
+  const credit = images
+    .map((image) => image.credit)
+    .filter(Boolean)
+    .filter((item, index, items) => items.indexOf(item) === index)
+    .join(" / ");
 
   return (
-    <div className={`my-12 grid gap-4 ${gridClass}`}>
-      {images.map((image, index) => {
-        const aspectRatio = image.aspectRatio || (image.width && image.height ? image.width / image.height : 4 / 3);
-        const frameClass =
-          aspectRatio < 0.85
-            ? "aspect-[3/4]"
-            : aspectRatio > 1.15
-              ? "aspect-[4/3]"
-              : "aspect-square";
+    <figure className="my-12 m-0">
+      <div className={`grid ${gapClass} ${gridClass}`}>
+        {images.map((image, index) => {
+          const aspectRatio = image.aspectRatio || (image.width && image.height ? image.width / image.height : 4 / 3);
+          const frameClass =
+            aspectRatio < 0.85
+              ? "aspect-[3/4]"
+              : aspectRatio > 1.15
+                ? "aspect-[4/3]"
+                : "aspect-square";
 
-        return (
-        <figure key={image._key || image.url || index} className="m-0">
-          <div className={`relative overflow-hidden bg-[var(--paper-2)] ${frameClass}`}>
+          return (
+          <div key={image._key || image.url || index} className={`relative overflow-hidden bg-[var(--paper-2)] ${frameClass}`}>
             <Image
               src={image.url || ""}
               alt={image.alt || ""}
@@ -121,17 +131,17 @@ function ImageLayout({ value }: { value: ImageLayoutValue }) {
               className="object-cover"
             />
           </div>
-          {(image.caption || image.credit) && (
-            <figcaption className="mono mt-2 text-[var(--ink-3)]">
-              {image.caption}
-              {image.caption && image.credit ? " / " : ""}
-              {image.credit}
-            </figcaption>
-          )}
-        </figure>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+      {(caption || credit) && (
+        <figcaption className="mono mt-2 text-[var(--ink-3)]">
+          {caption}
+          {caption && credit ? " / " : ""}
+          {credit}
+        </figcaption>
+      )}
+    </figure>
   );
 }
 
