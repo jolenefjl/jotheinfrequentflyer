@@ -296,7 +296,7 @@ function StayReviewJournalPage({
       <ScrollToTop watch={review.slug} />
       <section className="border-b border-[var(--rule)]">
         <div className="container pt-8">
-          <div className="mono mb-12 text-[var(--ink-3)]">
+          <div className="mono mb-8 text-[var(--ink-3)] lg:mb-12">
             <Link href="/">Home</Link>
             <span className="mx-2">/</span>
             <Link href="/stays">Stays</Link>
@@ -308,8 +308,8 @@ function StayReviewJournalPage({
             ) : null}
           </div>
 
-          <div className="mx-auto max-w-[1080px] pb-16 text-center lg:pb-20">
-            <div className="mono mb-7 text-[var(--accent-deep)]">
+          <div className="mx-auto max-w-[1080px] pb-8 text-center lg:pb-20">
+            <div className="mono mb-5 text-[var(--accent-deep)] lg:mb-7">
               * Stay
               {country ? ` - ${country}` : ""}
               {monthYear ? ` - ${monthYear}` : ""}
@@ -317,10 +317,10 @@ function StayReviewJournalPage({
             <h1 className="serif mx-auto m-0 max-w-[980px] text-[48px] font-normal leading-[1.04] tracking-[-0.01em]">
               {review.title}
             </h1>
-            <p className="serif mx-auto mt-7 max-w-[720px] text-[22px] italic leading-[1.4] text-[var(--ink-2)]">
+            <p className="serif mx-auto mt-5 max-w-[720px] text-[22px] italic leading-[1.4] text-[var(--ink-2)] lg:mt-7">
               {review.dek}
             </p>
-            <div className="mono mt-9 flex flex-wrap items-center justify-center gap-4 text-[var(--ink-3)]">
+            <div className="mono mt-6 flex flex-wrap items-center justify-center gap-4 text-[var(--ink-3)] lg:mt-9">
               {average != null ? (
                 <RatingStars rating={average} />
               ) : null}

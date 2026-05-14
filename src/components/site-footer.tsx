@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CurrentDate } from "@/components/current-date";
 import { getSiteChrome } from "@/lib/sanity-content";
 
 function FooterLink({ href, label }: { href: string; label: string }) {
@@ -15,6 +16,7 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 
 export async function SiteFooter() {
   const { footer } = await getSiteChrome();
+  const issueLabel = footer.bottomRight?.split(/[·•]/)[0]?.trim() || "Issue 047";
 
   return (
     <footer className="site-footer">
@@ -52,7 +54,9 @@ export async function SiteFooter() {
         </div>
         <div className="site-footer__bot">
           <span>{footer.bottomLeft}</span>
-          <span>{footer.bottomRight}</span>
+          <span>
+            {issueLabel} · <CurrentDate />
+          </span>
         </div>
       </div>
     </footer>

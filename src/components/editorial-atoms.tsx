@@ -141,7 +141,7 @@ export async function CategoryLanding({ category }: { category: EditorialCategor
             </span>
           </div>
           <div className="grid items-end gap-16 lg:grid-cols-[1.4fr_1fr]">
-            <h1 className="serif m-0 text-[clamp(72px,11vw,180px)] font-normal italic leading-[0.9] tracking-[-0.04em]">
+            <h1 className="serif m-0 max-w-full text-[clamp(52px,18vw,180px)] font-normal italic leading-[0.9] tracking-[-0.04em] break-words lg:text-[clamp(72px,11vw,180px)]">
               {meta.title}
             </h1>
             <p className="mb-3.5 max-w-[460px] text-lg leading-[1.55] text-[var(--ink-2)]">
@@ -152,8 +152,8 @@ export async function CategoryLanding({ category }: { category: EditorialCategor
       </section>
 
       <section className="sticky top-[114px] z-20 border-b border-[var(--rule)] bg-[var(--paper)]">
-        <div className="container flex h-14 items-center justify-between">
-          <div className="flex gap-0">
+        <div className="container flex min-h-14 items-center justify-between gap-4 py-2 max-sm:flex-col max-sm:items-start">
+          <div className="flex flex-wrap gap-0">
             {["All", ...meta.tags].map((tag, index) => (
               <span
                 key={tag}
@@ -163,7 +163,7 @@ export async function CategoryLanding({ category }: { category: EditorialCategor
               </span>
             ))}
           </div>
-          <div className="flex items-center gap-3.5">
+          <div className="flex flex-wrap items-center gap-3.5">
             <span className="mono text-[var(--ink-3)]">Sort</span>
             <span className="mono border border-[var(--rule)] px-3 py-2">Most recent</span>
           </div>
