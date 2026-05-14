@@ -1,38 +1,30 @@
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { CurrentDate } from "@/components/current-date";
-import { hasVisibleCityGuides } from "@/lib/sanity-content";
-
-const navItems = [
-  ["Home", "/"],
-  ["Stays", "/stays"],
-  ["Food", "/food"],
-  ["Experiences", "/experiences"],
-  ["Kids", "/kids"],
-];
+import { getSiteChrome, hasVisibleCityGuides } from "@/lib/sanity-content";
 
 export async function SiteHeader() {
-  const showCityGuides = await hasVisibleCityGuides();
-  const items = showCityGuides ? [...navItems, ["City Guides", "/city-guides"]] : navItems;
+  const [chrome, showCityGuides] = await Promise.all([getSiteChrome(), hasVisibleCityGuides()]);
+  const items = chrome.header.navigation.filter((item) => item.href !== "/city-guides" || showCityGuides);
 
   return (
     <header className="site-header">
       <div className="container">
         <div className="site-header__bar">
           <div className="site-header__meta">
-            <span className="mono">No 047</span>
+            <span className="mono">{chrome.header.issueLabel}</span>
             <span className="text-[var(--ink-4)]">·</span>
             <CurrentDate />
           </div>
           <Link href="/" className="brandmark" aria-label="Infrequent Flyer home">
             <span className="brandmark__name">
-              Infrequent
+              {chrome.header.brandLineOne}
               <br />
-              Flyer
+              {chrome.header.brandLineTwo}
             </span>
           </Link>
           <div className="site-header__actions">
-            <span className="mono text-[var(--ink-3)]">Vol. III</span>
+            <span className="mono text-[var(--ink-3)]">{chrome.header.volumeLabel}</span>
             <button className="iconbtn" aria-label="Search">
               <Search size={16} strokeWidth={1.6} />
             </button>
@@ -42,9 +34,9 @@ export async function SiteHeader() {
       <nav className="site-nav">
         <div className="container">
           <div className="site-nav__inner">
-            {items.map(([label, href]) => (
-              <Link key={href} href={href} className={`nav-item ${href === "/" ? "active" : ""}`}>
-                {label}
+            {items.map((item) => (
+              <Link key={item.href} href={item.href} className={`nav-item ${item.href === "/" ? "active" : ""}`}>
+                {item.label}
               </Link>
             ))}
             <div className="nav-spacer" />

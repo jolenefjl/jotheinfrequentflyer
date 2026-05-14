@@ -51,6 +51,49 @@ export type NewsletterSettings = {
   emailPlaceholderText?: string;
 };
 
+export type SiteLink = {
+  label: string;
+  href: string;
+  visible?: boolean;
+};
+
+export type SiteChromeContent = {
+  header: {
+    issueLabel: string;
+    volumeLabel: string;
+    brandLineOne: string;
+    brandLineTwo: string;
+    navigation: SiteLink[];
+  };
+  footer: {
+    newsletterKicker: string;
+    newsletterTitle: string;
+    newsletterDescription: string;
+    newsletterVisible: boolean;
+    emailPlaceholder: string;
+    buttonText: string;
+    columns: { title: string; links: SiteLink[] }[];
+    bottomLeft: string;
+    bottomRight: string;
+  };
+};
+
+export type SitePageContent = {
+  title: string;
+  slug: string;
+  eyebrow?: string;
+  intro?: string;
+  imageUrl?: string;
+  imageAlt?: string;
+  imageCaption?: string;
+  body?: unknown[];
+  cta?: {
+    label?: string;
+    href?: string;
+  };
+  metadata?: SanityMetadata;
+};
+
 export type SanityPlace = {
   id: string;
   slug: string;
@@ -225,6 +268,100 @@ const entryProjection = `
   }
 `;
 
+const sitePageProjection = `
+  title,
+  "slug": slug.current,
+  eyebrow,
+  intro,
+  "imageUrl": image.asset->url,
+  "imageAlt": image.alt,
+  "imageCaption": image.caption,
+  body[]{
+    ...,
+    _type == "imageLayout" => {
+      ...,
+      images[]{
+        ...,
+        "url": image.asset->url,
+        "width": image.asset->metadata.dimensions.width,
+        "height": image.asset->metadata.dimensions.height,
+        "aspectRatio": image.asset->metadata.dimensions.aspectRatio
+      }
+    }
+  },
+  cta,
+  metadata{
+    metaTitle,
+    metaDescription,
+    ogDescription,
+    "ogImage": ogImage.asset->url,
+    twitterCardDescription,
+    "twitterCardImage": twitterCardImage.asset->url
+  }
+`;
+
+const fallbackSiteChrome: SiteChromeContent = {
+  header: {
+    issueLabel: "No 047",
+    volumeLabel: "Vol. III",
+    brandLineOne: "Infrequent",
+    brandLineTwo: "Flyer",
+    navigation: [
+      { label: "Home", href: "/" },
+      { label: "Stays", href: "/stays" },
+      { label: "Food", href: "/food" },
+      { label: "Experiences", href: "/experiences" },
+      { label: "Kids", href: "/kids" },
+    ],
+  },
+  footer: {
+    newsletterKicker: "The newsletter",
+    newsletterTitle: "A note from somewhere, every other Sunday.",
+    newsletterDescription:
+      "One review, one tip, one thing I'm thinking about. No sponsorships, no scrolling carousels - just a letter.",
+    newsletterVisible: true,
+    emailPlaceholder: "your@email.com",
+    buttonText: "Subscribe",
+    columns: [
+      {
+        title: "Sections",
+        links: [
+          { label: "Stays", href: "/stays" },
+          { label: "Food", href: "/food" },
+          { label: "Experiences", href: "/experiences" },
+          { label: "Kids", href: "/kids" },
+          { label: "City Guides", href: "/city-guides" },
+          { label: "Destinations", href: "/places" },
+        ],
+      },
+      {
+        title: "About",
+        links: [
+          { label: "Who's behind this", href: "/about" },
+          { label: "How I review", href: "/how-i-review" },
+          { label: "Press & partnerships", href: "/press-partnerships" },
+          { label: "Contact", href: "/contact" },
+        ],
+      },
+      {
+        title: "Elsewhere",
+        links: [
+          { label: "Instagram", href: "https://instagram.com/" },
+          { label: "Substack", href: "https://substack.com/" },
+          { label: "Are.na", href: "https://www.are.na/" },
+          { label: "RSS feed", href: "/rss.xml" },
+        ],
+      },
+    ],
+    bottomLeft: "© 2026 Infrequent Flyer · Made slowly",
+    bottomRight: "Issue 047 · May 4, 2026",
+  },
+};
+
+function visibleLinks(links?: SiteLink[]) {
+  return (links || []).filter((link) => link.visible !== false && link.label && link.href);
+}
+
 const entriesQuery = `
 *[_type in [${entryTypes}]] | order(coalesce(publishedDate, _createdAt) desc) {
   ${entryProjection}
@@ -350,6 +487,71 @@ export async function getNewsletterSettings(): Promise<NewsletterSettings> {
     emailPlaceholderText: "your@email.com",
     ...data,
   };
+}
+
+export async function getSiteChrome(): Promise<SiteChromeContent> {
+  const data = await sanityQuery<SiteChromeContent>(`
+    *[_type == "siteChrome"][0]{
+      header{
+        issueLabel,
+        volumeLabel,
+        brandLineOne,
+        brandLineTwo,
+        navigation
+      },
+      footer{
+        newsletterKicker,
+        newsletterTitle,
+        newsletterDescription,
+        newsletterVisible,
+        emailPlaceholder,
+        buttonText,
+        columns,
+        bottomLeft,
+        bottomRight
+      }
+    }
+  `);
+
+  return {
+    header: {
+      ...fallbackSiteChrome.header,
+      ...data?.header,
+      navigation: visibleLinks(data?.header?.navigation).length
+        ? visibleLinks(data?.header?.navigation)
+        : fallbackSiteChrome.header.navigation,
+    },
+    footer: {
+      ...fallbackSiteChrome.footer,
+      ...data?.footer,
+      columns: data?.footer?.columns?.length
+        ? data.footer.columns
+            .map((column) => ({
+              title: column.title,
+              links: visibleLinks(column.links),
+            }))
+            .filter((column) => column.title && column.links.length)
+        : fallbackSiteChrome.footer.columns,
+    },
+  };
+}
+
+export async function getSitePageBySlug(slug: string): Promise<SitePageContent | null> {
+  const data = await sanityQuery<SitePageContent>(
+    `
+      *[_type == "sitePage" && slug.current == $slug][0]{
+        ${sitePageProjection}
+      }
+    `,
+    { slug },
+  );
+
+  return data?.title && data?.slug ? data : null;
+}
+
+export async function getSitePageSlugs(): Promise<string[]> {
+  const data = await sanityQuery<string[]>(`*[_type == "sitePage" && defined(slug.current)].slug.current`);
+  return data || [];
 }
 
 export async function getPlaces(options?: { fallback?: boolean }): Promise<SanityPlace[]> {

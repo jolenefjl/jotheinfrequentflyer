@@ -6,6 +6,8 @@ import { foodEntry } from "./foodReview";
 import { homePage } from "./homePage";
 import { kidsContent } from "./kidsContent";
 import { newsletterSettings, siteSettings, socialSharingSettings } from "./settings";
+import { siteChrome } from "./siteChrome";
+import { sitePage } from "./sitePage";
 import { stayReview } from "./stayReview";
 import { imageLayout, imageWithMeta, pageMetadata, richText } from "./shared";
 import { topList } from "./topList";
@@ -19,7 +21,9 @@ export const schemaTypes = [
   siteSettings,
   socialSharingSettings,
   newsletterSettings,
+  siteChrome,
   homePage,
+  sitePage,
   blogPost,
   cityGuide,
   destination,
