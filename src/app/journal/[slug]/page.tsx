@@ -11,7 +11,6 @@ import { RichText, slugifyHeading } from "@/components/rich-text";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import {
   editorialPhotos,
-  reviewsForCategory,
 } from "@/lib/editorial-data";
 import {
   getEditorialEntries,
@@ -77,7 +76,9 @@ export default async function JournalPage({
     notFound();
   }
 
-  const related = reviewsForCategory(review.category)
+  const entries = await getEditorialEntries();
+  const related = entries
+    .filter((item) => item.category === review.category)
     .filter((item) => item.slug !== review.slug)
     .slice(0, 3);
 
@@ -256,7 +257,7 @@ function StayReviewJournalPage({
   related,
 }: {
   review: SanityEditorialEntry;
-  related: ReturnType<typeof reviewsForCategory>;
+  related: SanityEditorialEntry[];
 }) {
   const headings = extractH2Links(review.body);
   const average = scoreAverage(review);
@@ -540,7 +541,7 @@ function RelatedSection({
   related,
   category,
 }: {
-  related: ReturnType<typeof reviewsForCategory>;
+  related: SanityEditorialEntry[];
   category: SanityEditorialEntry["category"];
 }) {
   return (
