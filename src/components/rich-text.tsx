@@ -17,6 +17,11 @@ type ImageLayoutValue = {
 };
 
 const headingClass = "serif scroll-mt-32 font-normal tracking-[-0.02em] text-[var(--ink)]";
+const captionLabels: Record<number, string[]> = {
+  2: ["L", "R"],
+  3: ["L", "C", "R"],
+  4: ["TL", "TR", "BL", "BR"],
+};
 
 function textFromChildren(children: unknown): string {
   if (Array.isArray(children)) {
@@ -99,10 +104,17 @@ function ImageLayout({ value }: { value: ImageLayoutValue }) {
           ? "grid-cols-1 md:grid-cols-3"
           : "grid-cols-2";
   const gapClass = images.length > 1 ? "gap-1.5 md:gap-2" : "gap-4";
-  const caption = images
-    .map((image) => image.caption)
-    .filter(Boolean)
-    .join(" / ");
+  const labels = captionLabels[images.length];
+  const captions = images
+    .map((image, index) => {
+      if (!image.caption) {
+        return "";
+      }
+
+      return labels?.[index] ? `${labels[index]}: ${image.caption}` : image.caption;
+    })
+    .filter(Boolean);
+  const caption = captions.join(" / ");
   const credit = images
     .map((image) => image.credit)
     .filter(Boolean)
