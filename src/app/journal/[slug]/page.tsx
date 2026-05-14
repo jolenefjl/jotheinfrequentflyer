@@ -43,10 +43,10 @@ export async function generateMetadata({
   const title = review.metadata?.metaTitle || review.title;
   const description = review.metadata?.metaDescription || review.metadata?.ogDescription || review.dek;
   const image =
-    review.metadata?.ogImage ||
-    review.metadata?.twitterCardImage ||
     review.imageUrl ||
-    editorialPhotos[review.photo];
+    editorialPhotos[review.photo] ||
+    review.metadata?.ogImage ||
+    review.metadata?.twitterCardImage;
 
   return {
     title,
@@ -60,7 +60,7 @@ export async function generateMetadata({
       card: "summary_large_image",
       title,
       description: review.metadata?.twitterCardDescription || description,
-      images: review.metadata?.twitterCardImage || image ? [review.metadata?.twitterCardImage || image] : undefined,
+      images: image ? [image] : undefined,
     },
   };
 }
