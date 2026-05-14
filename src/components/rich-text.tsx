@@ -22,6 +22,7 @@ const captionLabels: Record<number, string[]> = {
   3: ["L", "C", "R"],
   4: ["TL", "TR", "BL", "BR"],
 };
+type PositionedCaption = { text: string; index: number };
 
 function textFromChildren(children: unknown): string {
   if (Array.isArray(children)) {
@@ -106,15 +107,14 @@ function ImageLayout({ value }: { value: ImageLayoutValue }) {
   const gapClass = images.length > 1 ? "gap-1.5 md:gap-2" : "gap-4";
   const labels = captionLabels[images.length];
   const captions = images
-    .map((image, index) => {
-      if (!image.caption) {
-        return "";
-      }
-
-      return labels?.[index] ? `${labels[index]}: ${image.caption}` : image.caption;
-    })
-    .filter(Boolean);
-  const caption = captions.join(" / ");
+    .map((image, index) => (image.caption ? { text: image.caption, index } : null))
+    .filter((caption): caption is PositionedCaption => Boolean(caption));
+  const caption =
+    captions.length === 1
+      ? captions[0]?.text || ""
+      : captions
+          .map((caption) => (labels?.[caption.index] ? `${labels[caption.index]}: ${caption.text}` : caption.text))
+          .join(" / ");
   const credit = images
     .map((image) => image.credit)
     .filter(Boolean)
