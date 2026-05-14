@@ -28,6 +28,23 @@ export async function SiteHeader() {
             <Link href="/search" className="iconbtn" aria-label="Search">
               <Search size={16} strokeWidth={1.6} />
             </Link>
+            <details className="mobile-menu">
+              <summary className="iconbtn mobile-menu__button" aria-label="Open menu">
+                <span aria-hidden="true" />
+                <span aria-hidden="true" />
+                <span aria-hidden="true" />
+              </summary>
+              <div className="mobile-menu__panel">
+                {items.map((item) => (
+                  <Link key={item.href} href={item.href} className="mobile-menu__item">
+                    {item.label}
+                  </Link>
+                ))}
+                <Link href="/search" className="mobile-menu__item">
+                  Search
+                </Link>
+              </div>
+            </details>
           </div>
         </div>
       </div>
@@ -43,22 +60,6 @@ export async function SiteHeader() {
           </div>
         </div>
       </nav>
-      <details className="mobile-menu">
-        <summary className="container mobile-menu__summary">
-          <span className="mono">Menu</span>
-          <span aria-hidden="true">+</span>
-        </summary>
-        <div className="container mobile-menu__panel">
-          {items.map((item) => (
-            <Link key={item.href} href={item.href} className="mobile-menu__item">
-              {item.label}
-            </Link>
-          ))}
-          <Link href="/search" className="mobile-menu__item">
-            Search
-          </Link>
-        </div>
-      </details>
     </header>
   );
 }
