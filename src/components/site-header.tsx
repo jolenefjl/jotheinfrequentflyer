@@ -25,9 +25,9 @@ export async function SiteHeader() {
           </Link>
           <div className="site-header__actions">
             <span className="mono text-[var(--ink-3)]">{chrome.header.volumeLabel}</span>
-            <button className="iconbtn" aria-label="Search">
+            <Link href="/search" className="iconbtn" aria-label="Search">
               <Search size={16} strokeWidth={1.6} />
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -54,6 +54,9 @@ export async function SiteHeader() {
               {item.label}
             </Link>
           ))}
+          <Link href="/search" className="mobile-menu__item">
+            Search
+          </Link>
         </div>
       </details>
     </header>

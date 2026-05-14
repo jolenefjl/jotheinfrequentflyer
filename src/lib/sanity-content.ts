@@ -562,6 +562,16 @@ export async function getSitePageBySlug(slug: string): Promise<SitePageContent |
   return data?.title && data?.slug ? data : null;
 }
 
+export async function getSitePages(): Promise<SitePageContent[]> {
+  const data = await sanityQuery<SitePageContent[]>(`
+    *[_type == "sitePage" && defined(slug.current)] | order(title asc){
+      ${sitePageProjection}
+    }
+  `);
+
+  return (data || []).filter((page) => page.title && page.slug);
+}
+
 export async function getSitePageSlugs(): Promise<string[]> {
   const data = await sanityQuery<string[]>(`*[_type == "sitePage" && defined(slug.current)].slug.current`);
   return data || [];
