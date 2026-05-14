@@ -195,3 +195,7 @@ export const editorialCategoryMeta = {
 export function reviewsForCategory(category: EditorialCategory) {
   return editorialReviews.filter((review) => review.category === category);
 }
+
+export function reviewHref(review: { category: EditorialCategory; slug: string }) {
+  return review.category === "stays" ? `/stays/${review.slug}` : `/journal/${review.slug}`;
+}

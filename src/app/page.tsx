@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
+import { reviewHref } from "@/lib/editorial-data";
 import {
   getEditorialEntries,
   getHomePageContent,
@@ -338,7 +339,7 @@ export default async function Home() {
                 <div className="mono mb-7 tracking-[0.08em] text-[var(--ink-3)]">
                   {homePage?.coverStory?.dateLine || `${featured.date} · ${featured.location}`}
                 </div>
-                <Link href={`/journal/${featured.slug}`} className="btn solid">
+                <Link href={reviewHref(featured)} className="btn solid">
                   {homePage?.coverStory?.buttonText || "Read the review"}
                   <ArrowRight size={14} strokeWidth={1.6} />
                 </Link>
@@ -569,7 +570,7 @@ function SectionHead({
 function ReviewCard({ review }: { review: Review }) {
   return (
     <article className="review-card flex cursor-pointer flex-col gap-4">
-      <Link href={`/journal/${review.slug}`} className="contents">
+      <Link href={reviewHref(review)} className="contents">
         <div className="relative aspect-[4/5] overflow-hidden">
           <Photo
             src={review.imageUrl || photos[review.photo]}

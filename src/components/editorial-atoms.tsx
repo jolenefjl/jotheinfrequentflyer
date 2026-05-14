@@ -4,6 +4,7 @@ import { ArrowDown, ArrowRight, Plus, Star } from "lucide-react";
 import {
   editorialCategoryMeta,
   editorialPhotos,
+  reviewHref,
   type EditorialCategory,
   type EditorialReview,
 } from "@/lib/editorial-data";
@@ -81,7 +82,7 @@ export function SectionHead({
 export function ReviewCard({ review }: { review: EditorialReview }) {
   return (
     <article className="review-card flex cursor-pointer flex-col gap-4">
-      <Link href={`/journal/${review.slug}`} className="contents">
+      <Link href={reviewHref(review)} className="contents">
         <div className="relative aspect-[4/5] overflow-hidden">
           <EditorialPhoto
             src={review.imageUrl || editorialPhotos[review.photo]}
@@ -173,7 +174,7 @@ export async function CategoryLanding({ category }: { category: EditorialCategor
         <section className="border-b border-[var(--rule)]">
           <div className="container py-24 lg:py-32">
             <Link
-              href={`/journal/${featured.slug}`}
+              href={reviewHref(featured)}
               className="grid cursor-pointer items-center gap-14 lg:grid-cols-[1.5fr_1fr]"
             >
               <div className="relative aspect-[16/10] overflow-hidden">

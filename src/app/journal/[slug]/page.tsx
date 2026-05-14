@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, ArrowRight, ExternalLink, Star } from "lucide-react";
 import {
   EditorialPhoto,
@@ -24,7 +24,7 @@ export const dynamicParams = true;
 
 export async function generateStaticParams() {
   const entries = await getEditorialEntries();
-  return entries.map((review) => ({ slug: review.slug }));
+  return entries.filter((review) => review.category !== "stays").map((review) => ({ slug: review.slug }));
 }
 
 export async function generateMetadata({
@@ -64,16 +64,28 @@ export async function generateMetadata({
   };
 }
 
-export default async function JournalPage({
+export async function ReviewPage({
   params,
+  redirectStays = false,
+  expectedCategory,
 }: {
   params: Promise<{ slug: string }>;
+  redirectStays?: boolean;
+  expectedCategory?: SanityEditorialEntry["category"];
 }) {
   const { slug } = await params;
   const review = await getEditorialEntryBySlug(slug);
 
   if (!review) {
     notFound();
+  }
+
+  if (expectedCategory && review.category !== expectedCategory) {
+    notFound();
+  }
+
+  if (redirectStays && review.category === "stays") {
+    redirect(`/stays/${review.slug}`);
   }
 
   const entries = await getEditorialEntries();
@@ -190,6 +202,14 @@ export default async function JournalPage({
       <RelatedSection related={related} category={review.category} />
     </main>
   );
+}
+
+export default async function JournalPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  return <ReviewPage params={params} redirectStays />;
 }
 
 function extractH2Links(body?: unknown[]) {
