@@ -158,11 +158,12 @@ export const imageField = defineField({
 
 export const coverImageField = defineField({
   name: "coverImage",
-  title: "Cover image",
+  title: "Main image",
   type: "image",
+  description: "Used for the article hero, cards, homepage feature, and social sharing preview.",
   options: { hotspot: true },
   fields: [
-    defineField({ name: "alt", title: "Alt text", type: "string" }),
+    defineField({ name: "alt", title: "Alt text", type: "string", description: "Optional. If blank, the article title is used where possible." }),
     defineField({ name: "caption", title: "Caption", type: "string" }),
     defineField({ name: "credit", title: "Image credit", type: "string" }),
   ],

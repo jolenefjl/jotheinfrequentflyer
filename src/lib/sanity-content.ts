@@ -362,6 +362,18 @@ function visibleLinks(links?: SiteLink[]) {
   return (links || []).filter((link) => link.visible !== false && link.label && link.href);
 }
 
+function averageStayScores(scores: unknown) {
+  if (!scores || typeof scores !== "object") {
+    return null;
+  }
+
+  const values = stayScoreCriteria
+    .map((item) => (scores as StayScoreValues)[item.key])
+    .filter((value): value is number => typeof value === "number");
+
+  return values.length ? Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(1)) : null;
+}
+
 const entriesQuery = `
 *[_type in [${entryTypes}]] | order(coalesce(publishedDate, _createdAt) desc) {
   ${entryProjection}
@@ -381,6 +393,7 @@ function normalizeEntry(entry: Record<string, unknown>): SanityEditorialEntry | 
 
   const imageUrl = typeof entry.imageUrl === "string" ? entry.imageUrl : undefined;
   const location = typeof entry.location === "string" ? entry.location : "";
+  const stayScoreAverage = averageStayScores(entry.stayScores);
 
   return {
     id: String(entry._id || slug),
@@ -395,7 +408,7 @@ function normalizeEntry(entry: Record<string, unknown>): SanityEditorialEntry | 
     photo: fallbackPhotoByCategory[category],
     imageUrl,
     photoLabel: String(entry.imageCaption || entry.imageAlt || location || title),
-    rating: typeof entry.rating === "number" ? entry.rating : null,
+    rating: stayScoreAverage ?? (typeof entry.rating === "number" ? entry.rating : null),
     bestFor: Array.isArray(entry.bestFor) ? (entry.bestFor as string[]) : undefined,
     verdict: typeof entry.verdict === "string" ? entry.verdict : undefined,
     avoid: typeof entry.avoid === "string" ? entry.avoid : undefined,
