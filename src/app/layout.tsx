@@ -4,6 +4,7 @@ import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getSiteSettings } from "@/lib/sanity-content";
+import { Analytics } from "@vercel/analytics/next";
 
 const sourceSerif = Source_Serif_4({
   variable: "--font-source-serif",
@@ -74,6 +75,7 @@ export default function RootLayout({
         <SiteHeader />
         {children}
         <SiteFooter />
+        <Analytics />
       </body>
     </html>
   );
