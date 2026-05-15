@@ -58,6 +58,7 @@ export type SiteLink = {
 };
 
 export type SiteChromeContent = {
+  categoryFilterBarVisible?: boolean;
   header: {
     issueLabel: string;
     volumeLabel: string;
@@ -301,6 +302,7 @@ const sitePageProjection = `
 `;
 
 const fallbackSiteChrome: SiteChromeContent = {
+  categoryFilterBarVisible: false,
   header: {
     issueLabel: "No 047",
     volumeLabel: "Vol. III",
@@ -505,6 +507,7 @@ export async function getNewsletterSettings(): Promise<NewsletterSettings> {
 export async function getSiteChrome(): Promise<SiteChromeContent> {
   const data = await sanityQuery<SiteChromeContent>(`
     *[_type == "siteChrome"][0]{
+      categoryFilterBarVisible,
       header{
         issueLabel,
         volumeLabel,
@@ -527,6 +530,7 @@ export async function getSiteChrome(): Promise<SiteChromeContent> {
   `);
 
   return {
+    categoryFilterBarVisible: data?.categoryFilterBarVisible === true,
     header: {
       ...fallbackSiteChrome.header,
       ...data?.header,

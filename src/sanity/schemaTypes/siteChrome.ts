@@ -26,6 +26,14 @@ export const siteChrome = defineType({
   fields: [
     defineField({ name: "title", title: "Internal title", type: "string", initialValue: "Header & Footer" }),
     defineField({
+      name: "categoryFilterBarVisible",
+      title: "Show category filter bars",
+      type: "boolean",
+      initialValue: false,
+      description:
+        "Shows the filter/sort strip on Stays, Food, Experiences, Kids, and Tips pages. Keep off while sections have only a few posts.",
+    }),
+    defineField({
       name: "header",
       title: "Header",
       type: "object",

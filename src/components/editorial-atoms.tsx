@@ -8,7 +8,7 @@ import {
   type EditorialCategory,
   type EditorialReview,
 } from "@/lib/editorial-data";
-import { getEditorialEntriesByCategory } from "@/lib/sanity-content";
+import { getEditorialEntriesByCategory, getSiteChrome } from "@/lib/sanity-content";
 
 const badgeByCategory: Record<EditorialCategory, string> = {
   stays: "Stay",
@@ -124,11 +124,42 @@ export function ComingNextIssue() {
   );
 }
 
-export async function CategoryLanding({ category }: { category: EditorialCategory }) {
+function normalizeFilter(value?: string) {
+  return (value || "").trim().toLowerCase();
+}
+
+function matchesFilter(review: EditorialReview, filter: string) {
+  if (!filter) {
+    return true;
+  }
+
+  return [
+    review.title,
+    review.dek,
+    review.kicker,
+    review.location,
+    ...(Array.isArray((review as { bestFor?: string[] }).bestFor) ? (review as { bestFor?: string[] }).bestFor || [] : []),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase()
+    .includes(filter);
+}
+
+export async function CategoryLanding({
+  category,
+  filter,
+}: {
+  category: EditorialCategory;
+  filter?: string;
+}) {
   const meta = editorialCategoryMeta[category];
-  const all = await getEditorialEntriesByCategory(category);
-  const featured = all[0];
-  const rest = all.slice(1);
+  const [all, chrome] = await Promise.all([getEditorialEntriesByCategory(category), getSiteChrome()]);
+  const activeFilter = normalizeFilter(filter);
+  const visibleEntries = activeFilter ? all.filter((review) => matchesFilter(review, activeFilter)) : all;
+  const showFilterBar = chrome.categoryFilterBarVisible === true;
+  const featured = visibleEntries[0];
+  const rest = visibleEntries.slice(1);
 
   return (
     <main className="page">
@@ -151,24 +182,32 @@ export async function CategoryLanding({ category }: { category: EditorialCategor
         </div>
       </section>
 
-      <section className="sticky top-[114px] z-20 border-b border-[var(--rule)] bg-[var(--paper)]">
-        <div className="container flex min-h-14 items-center justify-between gap-4 py-2 max-sm:flex-col max-sm:items-start">
-          <div className="flex flex-wrap gap-0">
-            {["All", ...meta.tags].map((tag, index) => (
-              <span
-                key={tag}
-                className={`mono px-4 py-2 ${index === 0 ? "bg-[var(--ink)] text-[var(--paper)]" : "text-[var(--ink-2)]"}`}
-              >
-                {tag}
-              </span>
-            ))}
+      {showFilterBar ? (
+        <section className="sticky top-[114px] z-20 border-b border-[var(--rule)] bg-[var(--paper)]">
+          <div className="container flex min-h-14 items-center justify-between gap-4 py-2 max-sm:flex-col max-sm:items-start">
+            <div className="flex flex-wrap gap-0">
+              {["All", ...meta.tags].map((tag) => {
+                const isAll = tag === "All";
+                const tagValue = normalizeFilter(tag);
+                const active = isAll ? !activeFilter : activeFilter === tagValue;
+                return (
+                  <Link
+                    key={tag}
+                    href={isAll ? `/${category}` : `/${category}?filter=${encodeURIComponent(tagValue)}`}
+                    className={`mono px-4 py-2 ${active ? "bg-[var(--ink)] text-[var(--paper)]" : "text-[var(--ink-2)]"}`}
+                  >
+                    {tag}
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="flex flex-wrap items-center gap-3.5">
+              <span className="mono text-[var(--ink-3)]">Sort</span>
+              <span className="mono border border-[var(--rule)] px-3 py-2">Most recent</span>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3.5">
-            <span className="mono text-[var(--ink-3)]">Sort</span>
-            <span className="mono border border-[var(--rule)] px-3 py-2">Most recent</span>
-          </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {featured ? (
         <section className="border-b border-[var(--rule)]">
@@ -210,6 +249,15 @@ export async function CategoryLanding({ category }: { category: EditorialCategor
                   Read review <ArrowRight size={14} />
                 </span>
               </div>
+            </Link>
+          </div>
+        </section>
+      ) : activeFilter ? (
+        <section className="border-b border-[var(--rule)]">
+          <div className="container py-20">
+            <p className="serif m-0 mb-4 text-[34px] leading-[1.1]">Nothing filed under that filter yet.</p>
+            <Link href={`/${category}`} className="btn ghost">
+              Show all {meta.title.toLowerCase().replace(".", "")}
             </Link>
           </div>
         </section>
