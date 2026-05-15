@@ -10,6 +10,7 @@ import {
   readingTimeField,
   seoFields,
   slugField,
+  tagsField,
   titleField,
 } from "./shared";
 
@@ -27,6 +28,7 @@ export const experience = defineType({
     locationField,
     readingTimeField,
     ratingField,
+    tagsField,
     defineField({ name: "duration", title: "Duration", type: "string" }),
     defineField({ name: "verdict", title: "Verdict", type: "string" }),
     defineField({ name: "bestFor", title: "Best for", type: "array", of: [{ type: "string" }] }),

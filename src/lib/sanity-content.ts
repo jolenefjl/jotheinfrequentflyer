@@ -14,6 +14,7 @@ export type SanityEditorialEntry = EditorialReview & {
   body?: unknown[];
   metadata?: SanityMetadata;
   bestFor?: string[];
+  tags?: string[];
   verdict?: string;
   avoid?: string;
   nights?: number;
@@ -232,6 +233,7 @@ const entryProjection = `
   "imageCaption": coalesce(coverImage.caption, image.caption),
   readingTime,
   rating,
+  tags,
   bestFor,
   verdict,
   avoid,
@@ -436,6 +438,7 @@ function normalizeEntry(entry: Record<string, unknown>): SanityEditorialEntry | 
     imageUrl,
     photoLabel: String(entry.imageCaption || entry.imageAlt || location || title),
     rating: stayScoreAverage ?? (typeof entry.rating === "number" ? entry.rating : null),
+    tags: Array.isArray(entry.tags) ? (entry.tags as string[]) : undefined,
     bestFor: Array.isArray(entry.bestFor) ? (entry.bestFor as string[]) : undefined,
     verdict: typeof entry.verdict === "string" ? entry.verdict : undefined,
     avoid: typeof entry.avoid === "string" ? entry.avoid : undefined,

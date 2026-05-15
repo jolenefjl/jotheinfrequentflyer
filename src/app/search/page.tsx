@@ -58,6 +58,7 @@ function entryToResult(entry: SanityEditorialEntry): SearchResult {
     entry.city,
     entry.country,
     entry.stayTypes?.join(" "),
+    entry.tags?.join(" "),
     entry.bestFor?.join(" "),
   ];
 

@@ -10,6 +10,7 @@ import {
   readingTimeField,
   seoFields,
   slugField,
+  tagsField,
   titleField,
 } from "./shared";
 
@@ -27,6 +28,7 @@ export const topTip = defineType({
     locationField,
     readingTimeField,
     ratingField,
+    tagsField,
     defineField({ name: "verdict", title: "Verdict", type: "string" }),
     authorField,
     defineField({ name: "publishedDate", title: "Published date", type: "date" }),

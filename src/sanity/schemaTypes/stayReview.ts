@@ -6,6 +6,7 @@ import {
   excerptField,
   locationField,
   slugField,
+  tagsField,
   titleField,
 } from "./shared";
 
@@ -100,6 +101,7 @@ export const stayReview = defineType({
       options: { layout: "tags" },
       description: "Choose all that apply. These can power filters later.",
     }),
+    defineField({ ...tagsField, group: "classification" }),
     defineField({
       name: "websiteUrl",
       title: "Website link",

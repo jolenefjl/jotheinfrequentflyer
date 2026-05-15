@@ -189,6 +189,16 @@ export const ratingField = defineField({
   validation: (Rule) => Rule.min(0).max(5),
 });
 
+export const tagsField = defineField({
+  name: "tags",
+  title: "Tags",
+  type: "array",
+  of: [{ type: "string" }],
+  options: { layout: "tags" },
+  description:
+    "Flexible internal labels for filtering and search, e.g. resort, solo-friendly, rainy day, city hotel.",
+});
+
 export const authorField = defineField({
   name: "author",
   title: "Author",

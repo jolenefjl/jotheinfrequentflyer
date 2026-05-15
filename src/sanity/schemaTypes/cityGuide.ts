@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity";
-import { bodyField, imageField, locationField, seoFields, slugField, titleField } from "./shared";
+import { bodyField, imageField, locationField, seoFields, slugField, tagsField, titleField } from "./shared";
 
 export const cityGuide = defineType({
   name: "cityGuide",
@@ -12,6 +12,7 @@ export const cityGuide = defineType({
     bodyField,
     imageField,
     locationField,
+    tagsField,
     defineField({ name: "bestFor", title: "Best for", type: "array", of: [{ type: "string" }] }),
     defineField({ name: "whenToGo", title: "When to go", type: "string" }),
     defineField({ name: "stayLength", title: "Ideal stay length", type: "string" }),

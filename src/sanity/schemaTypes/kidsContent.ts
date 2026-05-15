@@ -9,6 +9,7 @@ import {
   readingTimeField,
   seoFields,
   slugField,
+  tagsField,
   titleField,
 } from "./shared";
 
@@ -25,6 +26,7 @@ export const kidsContent = defineType({
     coverImageField,
     readingTimeField,
     ratingField,
+    tagsField,
     defineField({ name: "verdict", title: "Verdict", type: "string" }),
     defineField({ name: "bestFor", title: "Best for", type: "array", of: [{ type: "string" }] }),
     defineField({ name: "avoid", title: "Avoid", type: "string" }),
