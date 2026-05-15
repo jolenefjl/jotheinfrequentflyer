@@ -55,6 +55,9 @@ function entryToResult(entry: SanityEditorialEntry): SearchResult {
     category,
     entry.verdict,
     entry.goodFor,
+    entry.city,
+    entry.country,
+    entry.stayTypes?.join(" "),
     entry.bestFor?.join(" "),
   ];
 

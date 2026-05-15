@@ -21,6 +21,10 @@ export type SanityEditorialEntry = EditorialReview & {
   dish?: string;
   author?: string;
   websiteUrl?: string;
+  place?: SanityPlace;
+  city?: string;
+  country?: string;
+  stayTypes?: string[];
   stayScores?: StayScoreValues;
   price?: string;
   goodFor?: string;
@@ -234,6 +238,19 @@ const entryProjection = `
   author,
   publishedDate,
   location,
+  "place": place->{
+    _id,
+    name,
+    country,
+    "slug": slug.current,
+    entriesCount,
+    joTake,
+    "lat": coordinates.lat,
+    "lng": coordinates.lng
+  },
+  city,
+  country,
+  stayTypes,
   nights,
   duration,
   dish,
@@ -395,6 +412,10 @@ function normalizeEntry(entry: Record<string, unknown>): SanityEditorialEntry | 
 
   const imageUrl = typeof entry.imageUrl === "string" ? entry.imageUrl : undefined;
   const location = typeof entry.location === "string" ? entry.location : "";
+  const place =
+    typeof entry.place === "object" && entry.place
+      ? normalizePlace(entry.place as Record<string, unknown>)
+      : undefined;
   const stayScoreAverage = averageStayScores(entry.stayScores);
 
   return {
@@ -407,6 +428,10 @@ function normalizeEntry(entry: Record<string, unknown>): SanityEditorialEntry | 
     date: String(entry.publishedDate || ""),
     readTime: String(entry.readingTime || "5 min"),
     location,
+    place,
+    city: typeof entry.city === "string" ? entry.city : undefined,
+    country: typeof entry.country === "string" ? entry.country : place?.country,
+    stayTypes: Array.isArray(entry.stayTypes) ? (entry.stayTypes as string[]) : undefined,
     photo: fallbackPhotoByCategory[category],
     imageUrl,
     photoLabel: String(entry.imageCaption || entry.imageAlt || location || title),

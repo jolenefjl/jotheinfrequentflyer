@@ -138,6 +138,9 @@ function matchesFilter(review: EditorialReview, filter: string) {
     review.dek,
     review.kicker,
     review.location,
+    (review as { city?: string }).city,
+    (review as { country?: string }).country,
+    ...((review as { stayTypes?: string[] }).stayTypes || []),
     ...(Array.isArray((review as { bestFor?: string[] }).bestFor) ? (review as { bestFor?: string[] }).bestFor || [] : []),
   ]
     .filter(Boolean)
