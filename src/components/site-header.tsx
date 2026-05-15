@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { CurrentDate } from "@/components/current-date";
+import { MobileMenu } from "@/components/mobile-menu";
 import { getSiteChrome, hasVisibleCityGuides } from "@/lib/sanity-content";
 
 export async function SiteHeader() {
@@ -28,23 +29,7 @@ export async function SiteHeader() {
             <Link href="/search" className="iconbtn" aria-label="Search">
               <Search size={16} strokeWidth={1.6} />
             </Link>
-            <details className="mobile-menu">
-              <summary className="iconbtn mobile-menu__button" aria-label="Open menu">
-                <span aria-hidden="true" />
-                <span aria-hidden="true" />
-                <span aria-hidden="true" />
-              </summary>
-              <div className="mobile-menu__panel">
-                {items.map((item) => (
-                  <Link key={item.href} href={item.href} className="mobile-menu__item">
-                    {item.label}
-                  </Link>
-                ))}
-                <Link href="/search" className="mobile-menu__item">
-                  Search
-                </Link>
-              </div>
-            </details>
+            <MobileMenu items={items} />
           </div>
         </div>
       </div>
