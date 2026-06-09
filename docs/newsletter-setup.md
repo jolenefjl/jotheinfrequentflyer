@@ -1,22 +1,40 @@
 # Google Sheets newsletter setup
 
-1. Create a Google Sheet for newsletter signups.
-2. In the sheet, open **Extensions > Apps Script**.
+The website sends signups to a private Google Sheet through a server-side Next.js route
+and a protected Google Apps Script web app. The Sheet remains Restricted.
+
+## One-time Google setup
+
+1. Open the newsletter Google Sheet.
+2. Choose **Extensions > Apps Script**.
 3. Replace the starter code with `docs/google-sheets-newsletter.gs`.
-4. Open **Project Settings > Script properties** and add:
-   - Property: `NEWSLETTER_SECRET`
-   - Value: a long random private string
-5. Click **Deploy > New deployment**.
-6. Choose **Web app**.
-7. Execute as: **Me**.
-8. Who has access: **Anyone**.
-9. Deploy and approve the requested Spreadsheet and Mail permissions.
-10. Copy the `/exec` web app URL.
+4. At the top of the Apps Script editor, select the `setup` function and click **Run**.
+5. Approve the Spreadsheet and Mail permissions.
+6. Open **Execution log** and copy the value after `NEWSLETTER_SIGNUP_SECRET=`.
+7. Choose **Deploy > New deployment > Web app**.
+8. Set **Execute as** to **Me** and **Who has access** to **Anyone**.
+9. Deploy and copy the web app URL ending in `/exec`.
 
-The Vercel project needs these Production environment variables:
+The `setup` function generates the secret automatically. You do not need to invent one.
 
-- `GOOGLE_SHEETS_NEWSLETTER_WEBHOOK_URL`: the deployed `/exec` URL
-- `NEWSLETTER_WEBHOOK_SECRET`: the same secret stored in Apps Script
+## Vercel environment variables
 
-After adding them, redeploy the site and test one signup. New addresses are appended to the
-`Signups` tab and a notification is sent to `jolene.fjl@gmail.com`.
+Add these server-only Production environment variables:
+
+- `GOOGLE_APPS_SCRIPT_NEWSLETTER_URL`: the deployed `/exec` URL
+- `NEWSLETTER_SIGNUP_SECRET`: the value printed by the `setup` function
+
+Do not prefix either variable with `NEXT_PUBLIC_`.
+
+After adding both variables, redeploy the site. The form remains hidden until both are
+configured.
+
+## Stored data and notifications
+
+Each new signup records first name, email, timestamp, language, and explicit consent in
+the `Signups` tab. Duplicate email addresses are ignored. New subscribers trigger an
+email to `jolene.fjl@gmail.com`.
+
+Until an automated unsubscribe endpoint is added, every newsletter must include clear
+instructions to email `jolene.fjl@gmail.com` to unsubscribe. Remove that address from
+the Sheet before sending another newsletter.

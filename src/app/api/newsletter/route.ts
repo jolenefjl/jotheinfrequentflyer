@@ -2,9 +2,16 @@ import { NextResponse } from "next/server";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+export const runtime = "nodejs";
+
 export async function POST(request: Request) {
-  const webhookUrl = process.env.GOOGLE_SHEETS_NEWSLETTER_WEBHOOK_URL;
-  const webhookSecret = process.env.NEWSLETTER_WEBHOOK_SECRET;
+  const webhookUrl = process.env.GOOGLE_APPS_SCRIPT_NEWSLETTER_URL;
+  const webhookSecret = process.env.NEWSLETTER_SIGNUP_SECRET;
+  const origin = request.headers.get("origin");
+
+  if (!origin || origin !== new URL(request.url).origin) {
+    return NextResponse.json({ message: "Invalid request origin." }, { status: 403 });
+  }
 
   if (!webhookUrl || !webhookSecret) {
     return NextResponse.json(
@@ -13,7 +20,13 @@ export async function POST(request: Request) {
     );
   }
 
-  let payload: { email?: unknown; website?: unknown; source?: unknown };
+  let payload: {
+    firstName?: unknown;
+    email?: unknown;
+    consent?: unknown;
+    website?: unknown;
+    locale?: unknown;
+  };
 
   try {
     payload = (await request.json()) as typeof payload;
@@ -25,11 +38,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "You are on the list." });
   }
 
+  const firstName = typeof payload.firstName === "string" ? payload.firstName.trim() : "";
   const email = typeof payload.email === "string" ? payload.email.trim().toLowerCase() : "";
-  const source = typeof payload.source === "string" ? payload.source.slice(0, 200) : "/";
+  const locale =
+    typeof payload.locale === "string" && payload.locale.toLowerCase().startsWith("no")
+      ? "no"
+      : "en";
+
+  if (!firstName || firstName.length > 80) {
+    return NextResponse.json({ message: "Please enter your first name." }, { status: 400 });
+  }
 
   if (!EMAIL_PATTERN.test(email) || email.length > 254) {
     return NextResponse.json({ message: "Please enter a valid email address." }, { status: 400 });
+  }
+
+  if (payload.consent !== true) {
+    return NextResponse.json(
+      { message: "Please confirm that you would like to receive the newsletter." },
+      { status: 400 },
+    );
   }
 
   try {
@@ -37,12 +65,15 @@ export async function POST(request: Request) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        firstName,
         email,
-        source,
+        locale,
+        consent: true,
         secret: webhookSecret,
         signedUpAt: new Date().toISOString(),
       }),
       cache: "no-store",
+      signal: AbortSignal.timeout(10_000),
     });
 
     if (!response.ok) {

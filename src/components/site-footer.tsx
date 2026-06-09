@@ -18,8 +18,8 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 export async function SiteFooter() {
   const { footer } = await getSiteChrome();
   const newsletterConfigured = Boolean(
-    process.env.GOOGLE_SHEETS_NEWSLETTER_WEBHOOK_URL &&
-      process.env.NEWSLETTER_WEBHOOK_SECRET,
+    process.env.GOOGLE_APPS_SCRIPT_NEWSLETTER_URL &&
+      process.env.NEWSLETTER_SIGNUP_SECRET,
   );
   const showNewsletter = footer.newsletterVisible && newsletterConfigured;
   const issueLabel = footer.bottomRight?.split(/[·•]/)[0]?.trim() || "Issue 047";

@@ -29,9 +29,11 @@ export function NewsletterSignupForm({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          firstName: data.get("firstName"),
           email: data.get("email"),
+          consent: data.get("consent") === "on",
           website: data.get("website"),
-          source: window.location.pathname,
+          locale: document.documentElement.lang || navigator.language || "en",
         }),
       });
       const result = (await response.json()) as { message?: string };
@@ -56,7 +58,24 @@ export function NewsletterSignupForm({
       onSubmit={handleSubmit}
       className={`mt-[18px] max-w-[520px] ${dark ? "" : "mx-auto"}`}
     >
-      <div className="flex">
+      <div className="grid grid-cols-1 sm:grid-cols-[0.7fr_1fr_auto]">
+        <label htmlFor={`newsletter-first-name-${variant}`} className="sr-only">
+          First name
+        </label>
+        <input
+          id={`newsletter-first-name-${variant}`}
+          name="firstName"
+          type="text"
+          autoComplete="given-name"
+          required
+          maxLength={80}
+          placeholder="First name"
+          className={
+            dark
+              ? "min-w-0 border border-b-0 border-[rgba(245,242,236,0.25)] bg-transparent px-[14px] py-3 font-mono text-xs tracking-[0.04em] text-[var(--paper)] outline-none sm:border-b sm:border-r-0"
+              : "min-w-0 border border-b-0 border-[var(--ink)] bg-transparent px-4 py-3 font-mono text-[11px] uppercase tracking-[0.08em] outline-none sm:border-b sm:border-r-0"
+          }
+        />
         <label htmlFor={`newsletter-email-${variant}`} className="sr-only">
           Email address
         </label>
@@ -70,8 +89,8 @@ export function NewsletterSignupForm({
           placeholder={placeholder}
           className={
             dark
-              ? "min-w-0 flex-1 border border-r-0 border-[rgba(245,242,236,0.25)] bg-transparent px-[14px] py-3 font-mono text-xs tracking-[0.04em] text-[var(--paper)] outline-none"
-              : "min-w-0 flex-1 border border-r-0 border-[var(--ink)] bg-transparent px-4 py-3 font-mono text-[11px] uppercase tracking-[0.08em] outline-none"
+              ? "min-w-0 border border-b-0 border-[rgba(245,242,236,0.25)] bg-transparent px-[14px] py-3 font-mono text-xs tracking-[0.04em] text-[var(--paper)] outline-none sm:border-b sm:border-r-0"
+              : "min-w-0 border border-b-0 border-[var(--ink)] bg-transparent px-4 py-3 font-mono text-[11px] uppercase tracking-[0.08em] outline-none sm:border-b sm:border-r-0"
           }
         />
         <input
@@ -94,6 +113,25 @@ export function NewsletterSignupForm({
           {status === "submitting" ? "Sending..." : buttonText}
         </button>
       </div>
+      <label
+        className={`mt-3 flex items-start gap-2 text-left text-xs leading-[1.5] ${
+          dark ? "text-[rgba(245,242,236,0.7)]" : "text-[var(--ink-3)]"
+        }`}
+      >
+        <input
+          name="consent"
+          type="checkbox"
+          required
+          className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--accent)]"
+        />
+        <span>
+          Yes, send me the Infrequent Flyer newsletter. I can unsubscribe at any time by emailing{" "}
+          <a className="underline" href="mailto:jolene.fjl@gmail.com?subject=Unsubscribe">
+            jolene.fjl@gmail.com
+          </a>
+          .
+        </span>
+      </label>
       {message ? (
         <p
           className={`m-0 mt-3 text-xs leading-[1.5] ${

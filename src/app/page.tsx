@@ -245,8 +245,8 @@ export default async function Home() {
   const showNewsletter =
     homePage?.newsletterSection?.visible !== false &&
     Boolean(
-      process.env.GOOGLE_SHEETS_NEWSLETTER_WEBHOOK_URL &&
-        process.env.NEWSLETTER_WEBHOOK_SECRET,
+      process.env.GOOGLE_APPS_SCRIPT_NEWSLETTER_URL &&
+        process.env.NEWSLETTER_SIGNUP_SECRET,
     );
   const browseTiles =
     homePage?.browseSection?.tiles?.filter((tile) => tile.visible !== false) ||
