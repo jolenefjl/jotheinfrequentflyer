@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
+import { NewsletterSignupForm } from "@/components/newsletter-signup-form";
 import { reviewHref } from "@/lib/editorial-data";
 import {
   getEditorialEntries,
@@ -241,7 +242,12 @@ export default async function Home() {
   const showBrowse = homePage?.browseSection?.visible !== false;
   const showLatest = homePage?.latestSection?.visible !== false;
   const showPlaces = homePage?.placeSection?.visible !== false;
-  const showNewsletter = homePage?.newsletterSection?.visible !== false;
+  const showNewsletter =
+    homePage?.newsletterSection?.visible !== false &&
+    Boolean(
+      process.env.GOOGLE_SHEETS_NEWSLETTER_WEBHOOK_URL &&
+        process.env.NEWSLETTER_WEBHOOK_SECRET,
+    );
   const browseTiles =
     homePage?.browseSection?.tiles?.filter((tile) => tile.visible !== false) ||
     categories.map((category) => ({
@@ -487,14 +493,10 @@ export default async function Home() {
             <p className="mx-auto mb-7 max-w-[620px] text-base leading-[1.65] text-[var(--ink-2)]">
               {newsletter.description}
             </p>
-            <form className="mx-auto flex max-w-[520px] justify-center">
-              <input
-                type="email"
-                placeholder={newsletter.emailPlaceholderText}
-                className="min-w-0 flex-1 border border-r-0 border-[var(--ink)] bg-transparent px-4 py-3 font-mono text-[11px] uppercase tracking-[0.08em] outline-none"
-              />
-              <button className="btn">{newsletter.subscribeButtonText}</button>
-            </form>
+            <NewsletterSignupForm
+              placeholder={newsletter.emailPlaceholderText || "your@email.com"}
+              buttonText={newsletter.subscribeButtonText || "Subscribe"}
+            />
           </div>
         </div>
       </section>

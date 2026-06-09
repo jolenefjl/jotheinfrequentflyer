@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CurrentDate } from "@/components/current-date";
+import { NewsletterSignupForm } from "@/components/newsletter-signup-form";
 import { getSiteChrome } from "@/lib/sanity-content";
 
 function FooterLink({ href, label }: { href: string; label: string }) {
@@ -16,29 +17,29 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 
 export async function SiteFooter() {
   const { footer } = await getSiteChrome();
+  const newsletterConfigured = Boolean(
+    process.env.GOOGLE_SHEETS_NEWSLETTER_WEBHOOK_URL &&
+      process.env.NEWSLETTER_WEBHOOK_SECRET,
+  );
+  const showNewsletter = footer.newsletterVisible && newsletterConfigured;
   const issueLabel = footer.bottomRight?.split(/[·•]/)[0]?.trim() || "Issue 047";
 
   return (
     <footer className="site-footer">
       <div className="container">
-        <div className="site-footer__grid">
-          <div>
-            <h4>{footer.newsletterKicker}</h4>
-            <p className="site-footer__title">{footer.newsletterTitle}</p>
-            <p className="site-footer__sig">{footer.newsletterDescription}</p>
-            {footer.newsletterVisible ? (
-              <form className="mt-[18px] flex max-w-[420px]">
-                <input
-                  type="email"
-                  placeholder={footer.emailPlaceholder}
-                  className="min-w-0 flex-1 border border-r-0 border-[rgba(245,242,236,0.25)] bg-transparent px-[14px] py-3 font-mono text-xs tracking-[0.04em] text-[var(--paper)] outline-none"
-                />
-                <button className="border border-[var(--paper)] bg-[var(--paper)] px-5 font-mono text-[11px] uppercase tracking-[0.1em] text-[var(--ink)]">
-                  {footer.buttonText}
-                </button>
-              </form>
-            ) : null}
-          </div>
+        <div className={`site-footer__grid ${showNewsletter ? "" : "site-footer__grid--without-newsletter"}`}>
+          {showNewsletter ? (
+            <div>
+              <h4>{footer.newsletterKicker}</h4>
+              <p className="site-footer__title">{footer.newsletterTitle}</p>
+              <p className="site-footer__sig">{footer.newsletterDescription}</p>
+              <NewsletterSignupForm
+                placeholder={footer.emailPlaceholder}
+                buttonText={footer.buttonText}
+                variant="dark"
+              />
+            </div>
+          ) : null}
           {footer.columns.map((column) => (
             <div key={column.title}>
               <h4>{column.title}</h4>

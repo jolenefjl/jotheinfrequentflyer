@@ -307,6 +307,10 @@ img {
   margin-bottom: 64px;
 }
 
+.site-footer__grid--without-newsletter {
+  grid-template-columns: repeat(3, 1fr);
+}
+
 .site-footer h4 {
   margin: 0 0 18px;
   color: rgba(245, 242, 236, 0.55);
